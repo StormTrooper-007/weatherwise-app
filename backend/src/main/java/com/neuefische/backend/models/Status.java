@@ -3,14 +3,14 @@ package com.neuefische.backend.models;
 public enum Status {
     OPEN("open"),
     DONE("done");
-    private String status;
+    private final String stat;
 
     Status(String s) {
-        status = s;
+        stat = s;
     }
 
     public String getStatus() {
-        return status;
+        return stat;
     }
 
 }
