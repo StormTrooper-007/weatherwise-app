@@ -6,7 +6,6 @@ import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class TodoService {
         newTodo.setPlan(todoWithOutId.plan());
         newTodo.setStartTime(todoWithOutId.startTime());
         newTodo.setStatus(Status.OPEN.getStatus());
-        newTodo.setCreatedAt(dateFormaterService.getZonedDateTime());
+        newTodo.setCreatedAt(dateFormaterService.getTimeStamp());
         todoRepository.save(newTodo);
         return newTodo;
     }
@@ -32,6 +31,5 @@ public class TodoService {
     public List<Todo> getAllTodos() {
         return todoRepository.findAll();
     }
-
 
 }

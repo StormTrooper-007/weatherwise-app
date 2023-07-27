@@ -1,28 +1,25 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {Todo} from "./utils.tsx";
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
+import {Box} from "@mui/material";
+import Protected from "./pages/Protected.tsx";
+import AddTodo from "./pages/AddTodo.tsx";
+import Todos from "./pages/Todos.tsx";
+
 
 function App() {
-    const [todos, setTodos] = useState<Todo[]>([]);
-
-    async function getAllTodos() {
-        const res = await axios.get("/api/todos")
-        setTodos(res.data);
-    }
-
-    useEffect(() => {
-        getAllTodos();
-    }, [])
-
+    const router = createBrowserRouter(
+        createRoutesFromElements(
+            <>
+                <Route path="/" element={<Protected/>}>
+                    <Route path="/todo" element={<AddTodo/>}></Route>
+                    <Route path="/todos" element={<Todos/>}></Route>
+                </Route>
+            </>
+        )
+    );
     return (
-        <div>
-            {todos.map((todo: Todo) => (
-                <div>
-                    <h2>{todo.plan}</h2>
-                    <h2>{todo.createdAt}</h2>
-                </div>
-            ))}
-        </div>
+        <Box>
+            <RouterProvider router={router}/>
+        </Box>
     )
 }
 

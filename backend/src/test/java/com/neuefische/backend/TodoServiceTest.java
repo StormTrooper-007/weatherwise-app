@@ -9,8 +9,6 @@ import com.neuefische.backend.services.UuidService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,8 +31,7 @@ class TodoServiceTest {
                 "go out to see friends",
                 "Fri, 25 Aug 2023 02:00:00 GMT"
         );
-
-        String nowTime = Instant.now().toString();
+        String nowTime = "2023-7-26T11:19:26.492745400";
 
         Todo expected = new Todo(
                 "1",
@@ -42,10 +39,11 @@ class TodoServiceTest {
                 todoWithOutId.startTime(),
                 Status.OPEN.getStatus(),
                 nowTime
+
         );
         when(uuidService.generateNewId()).thenReturn("1");
         when(todoService.createNewTodo(todoWithOutId)).thenReturn(expected);
-        when(dateFormaterService.getZonedDateTime()).thenReturn(nowTime);
+        when(dateFormaterService.getTimeStamp()).thenReturn(nowTime);
 
         Todo actual = todoService.createNewTodo(todoWithOutId);
         Assertions.assertEquals(expected, actual);
@@ -53,8 +51,8 @@ class TodoServiceTest {
 
     @Test
     void testGetAllTodos() {
-        String laterTime = Instant.now().plus(30, ChronoUnit.MINUTES).toString();
-        String nowTime = Instant.now().toString();
+        String laterTime = "2023-07-26 12:34:56.123456";
+        String nowTime = "2023-07-27 12:34:56.123456";
 
         when(todoRepository.findAll()).thenReturn(Arrays.asList(
                 new Todo("1", "go bike riding", "Fri, 25 Aug 2023 02:00:00 GMT", Status.OPEN.getStatus(), nowTime),
