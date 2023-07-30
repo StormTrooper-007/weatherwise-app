@@ -1,4 +1,4 @@
-package com.neuefische.backend;
+package com.neuefische.backend.controllers;
 
 import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
