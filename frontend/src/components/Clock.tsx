@@ -1,6 +1,7 @@
 import {Box, Typography, Paper} from "@mui/material"
 import {useEffect, useState} from "react"
 import {useTime} from "react-timer-hook"
+import dayjs from "dayjs";
 
 
 function Clock() {
@@ -58,7 +59,6 @@ function Clock() {
             default:
                 break;
         }
-
     }
 
 
@@ -108,12 +108,11 @@ function Clock() {
         return result
     }
 
-
     return (
         <Box sx={{
             position: "relative",
-            height: 200,
-            minWidth: 350,
+            height: 250,
+            minWidth: "100%",
             backgroundColor: determineMood("Haze")
         }}>
             {dayMood ? (
@@ -134,7 +133,7 @@ function Clock() {
                 <Typography variant="h4">{minutes < 10 && 0}{minutes}:</Typography>
                 <Typography variant="h4">{seconds < 10 && 0}{seconds}</Typography>
             </Paper>
-
+            <Typography>{dayjs().format('DD/MM/YYYY')}</Typography>
         </Box>
     );
 }

@@ -27,4 +27,9 @@ public class TodoController {
         return ResponseEntity.ok(todos);
     }
 
+    @GetMapping("/upcoming")
+    public List<Todo> getUpcomingTodos() {
+        return todoService.getUpcomingTodos();
+    }
+
 }

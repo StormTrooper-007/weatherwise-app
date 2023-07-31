@@ -12,8 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,20 +28,26 @@ class TodoIntegrationTest {
 
     @Test
     void testCreateTodo() throws Exception {
-        TodoWithOutId todoWithOutId = new TodoWithOutId("play football", "Fri, 25 Aug 2023 02:00:00 GMT");
+        TodoWithOutId todoWithOutId = new TodoWithOutId("play football", "2023-08-23T15:55:33.000+02:00");
         String requestBody = objectMapper.writeValueAsString(todoWithOutId);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/todos")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.plan").value("play football"))
-                .andExpect(jsonPath("$.startTime").value("Fri, 25 Aug 2023 02:00:00 GMT"));
+                .andExpect(jsonPath("$.startTime").value("2023-08-23T15:55:33.000+02:00"));
     }
 
     @Test
     void testGetAllTodos() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/todos"))
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void testUpcomingTodos() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todos/upcoming"))
+                .andExpect(status().isOk());
     }
 }

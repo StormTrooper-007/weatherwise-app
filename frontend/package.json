@@ -20,12 +20,13 @@
     "@types/react-redux": "^7.1.25",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
+    "framer-motion": "^10.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-rain-animation": "^1.0.4",
     "react-redux": "^8.1.1",
     "react-router-dom": "^6.14.2",
-    "react-timer-hook": "^3.0.7",
-    "react-rain-animation": "^1.0.4"
+    "react-timer-hook": "^3.0.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

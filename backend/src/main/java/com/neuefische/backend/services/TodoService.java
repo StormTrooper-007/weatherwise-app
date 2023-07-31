@@ -6,6 +6,7 @@ import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,6 +31,11 @@ public class TodoService {
 
     public List<Todo> getAllTodos() {
         return todoRepository.findAll();
+    }
+
+    public List<Todo> getUpcomingTodos() {
+        return todoRepository.findAll().stream().filter(todo
+                -> dateFormaterService.calcTimeDiffInDays(todo.getStartTime()) < 2).toList();
     }
 
 }
