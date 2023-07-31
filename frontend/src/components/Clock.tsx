@@ -38,19 +38,14 @@ function Clock() {
         switch (dayInNumber) {
             case 0:
                 return "Sunday"
-
             case 1:
                 return "Monday"
-
             case 2:
                 return "Tuesday"
-
             case 3:
                 return "Wednesday"
-
             case 4:
                 return "Thursday"
-
             case 5:
                 return "Friday"
             case 6:
@@ -62,49 +57,25 @@ function Clock() {
 
 
     function determineMood(weather: string) {
-        let result = ""
-        if (weather === "Clear" && dayMood) {
-            result = "#9adcfb"
-        } else if (weather === "Rain" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Mist" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Snow" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Thunderstorm" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Haze" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Clouds" && dayMood) {
-            result = "#9adcfb"
-        } else if (weather === "Clear" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Rain" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Snow" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Thunderstorm" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Clouds" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Mist" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Haze" && !dayMood) {
-            result = "#093170"
-        } else {
-            result = ""
-        }
-        return result
+        const weatherColors: { [key: string]: string } = {
+            "Clear": "#9adcfb",
+            "Rain": "#b0c4de",
+            "Mist": "#b0c4de",
+            "Snow": "#b0c4de",
+            "Thunderstorm": "#b0c4de",
+            "Haze": "#b0c4de",
+            "Clouds": "#9adcfb"
+        };
+
+        return weatherColors[weather] || "";
     }
 
-    function determineIcon() {
-        let result = ""
-        if ("Clouds" && !dayMood) {
-            result = "/icons8-night-100.png"
-        } else if ("Clouds" && dayMood) {
-            result = "/icons8-night-100.png"
+    function determineIcon(dayMood: boolean) {
+        if (!dayMood) {
+            return "/icons8-night-100.png";
+        } else {
+            return "/icons8-night-100.png";
         }
-        return result
     }
 
     return (
@@ -116,7 +87,7 @@ function Clock() {
         }}>
             {dayMood ? (
                 <img src="/icons8-sun-100.png" alt={"*"}/>
-            ) : <img src={determineIcon()} alt={"*"}/>}
+            ) : <img src={determineIcon(dayMood)} alt={"*"}/>}
             <Paper
                 sx={{
                     position: "absolute",
