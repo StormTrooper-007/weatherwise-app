@@ -68,5 +68,5 @@ export const apiSlice = createApi({
 export const {
     useGetTodosQuery,
     useCreateTodoMutation,
-    useGetUpcomingQuery
+    useGetUpcomingQuery,
 } = apiSlice;

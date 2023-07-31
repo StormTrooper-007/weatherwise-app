@@ -2,9 +2,15 @@ import {Box, Typography, Paper} from "@mui/material"
 import {useEffect, useState} from "react"
 import {useTime} from "react-timer-hook"
 import dayjs from "dayjs";
+import {WeatherInfo} from "../utils.tsx";
 
 
-function Clock() {
+type props = {
+    weatherInfo?: WeatherInfo
+}
+
+
+function Clock({weatherInfo}: props) {
     const [dayMood, setDayMood] = useState(false);
     const {
         seconds,
@@ -24,12 +30,9 @@ function Clock() {
                 setDayMood(false);
             }
         }
-
-        // Call the update function initially and every minute
         updateBackgroundColor();
         const interval = setInterval(updateBackgroundColor, 60000);
 
-        // Clean up the interval on component unmount
         return () => clearInterval(interval);
     }, [hours]);
 
@@ -56,26 +59,42 @@ function Clock() {
     }
 
 
-    function determineMood(weather: string) {
-        const weatherColors: { [key: string]: string } = {
-            "Clear": "#9adcfb",
-            "Rain": "#b0c4de",
-            "Mist": "#b0c4de",
-            "Snow": "#b0c4de",
-            "Thunderstorm": "#b0c4de",
-            "Haze": "#b0c4de",
-            "Clouds": "#9adcfb"
+    function determineMood(weather: string, dayMood: boolean) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        const weatherColors: {
+            [key: string]: {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                [key: boolean]: string
+            }
+        } = {
+            "Clear": {true: "#9adcfb", false: "#093170"},
+            "Rain": {true: "#b0c4de", false: "#093170"},
+            "Mist": {true: "#b0c4de", false: "#093170"},
+            "Snow": {true: "#b0c4de", false: "#093170"},
+            "Thunderstorm": {true: "#b0c4de", false: "#093170"},
+            "Haze": {true: "#b0c4de", false: "#093170"},
+            "Clouds": {true: "#9adcfb", false: "#093170"},
         };
-
-        return weatherColors[weather] || "";
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return weatherColors[weather]?.[dayMood] || "";
     }
 
-    function determineIcon(dayMood: boolean) {
-        if (!dayMood) {
-            return "/icons8-night-100.png";
-        } else {
-            return "/icons8-night-100.png";
-        }
+    const weather = weatherInfo?.weather.find((info: { id: number, main: string, description: string }) => info.main)
+
+
+    function determineIcon(dayMood: boolean, weather: string) {
+        const weatherIcons: { [key: string]: string } = {
+            "Clear": dayMood ? "/icons8-sun-100.png" : "/icons8-moon-100.png",
+            "Rain": "/icons8-rain-100.png",
+            "Snow": dayMood ? "/icons8-snow-100.png" : "/icons8-snowy-night-100.png",
+            "Thunderstorm": dayMood ? "/icons8-storm-100.png" : "/icons8-stormy-night-100.png",
+            "Haze": dayMood ? "/icons8-partly-cloudy-day-100.png" : "/icons8-night-100.png",
+            "Clouds": dayMood ? "/icons8-partly-cloudy-day-100.png" : "/icons8-night-100.png"
+        };
+
+        return weatherIcons[weather] || "";
     }
 
     return (
@@ -83,17 +102,20 @@ function Clock() {
             position: "relative",
             height: 250,
             minWidth: "100%",
-            backgroundColor: determineMood("Haze")
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            backgroundColor: determineMood(weather?.main, dayMood)
         }}>
-            {dayMood ? (
-                <img src="/icons8-sun-100.png" alt={"*"}/>
-            ) : <img src={determineIcon(dayMood)} alt={"*"}/>}
+            {// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                <img src={determineIcon(dayMood, weather?.main)} alt={"*"}/>
+            }
             <Paper
                 sx={{
                     position: "absolute",
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    backgroundColor: "rgba(255, 255, 255, 0.24)",
                     p: 3,
                     top: 50,
                     left: 110

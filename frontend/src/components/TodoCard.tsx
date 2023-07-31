@@ -19,9 +19,9 @@ function TodoCard({todo}: props) {
                 <Typography>{todo.plan}</Typography>
                 <Typography> {days} days, {hours}:{minutes}:{seconds} remaining</Typography>
                 <Box>
-                    <Button variant="contained" sx={{m: 2}}>view</Button>
-                    <Button variant="contained" sx={{m: 2}}>edit</Button>
-                    <Button variant="contained" sx={{m: 2}}>delete</Button>
+                    <Button variant="outlined" sx={{m: 2}}>view</Button>
+                    <Button variant="outlined" sx={{m: 2}}>edit</Button>
+                    <Button variant="outlined" sx={{m: 2}}>delete</Button>
                 </Box>
             </Item>
         </Box>
