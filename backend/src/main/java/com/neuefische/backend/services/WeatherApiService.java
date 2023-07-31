@@ -11,7 +11,7 @@ public class WeatherApiService {
 
     public Mono<APIResponse> getCurrentWeatherInfo(double lat, double lon) {
         return webClient.get()
-                .uri("/weather?lat=" + lat + "&lon=" + lon + "&appid=e8f20d625acd9bcfe4bdded7453c60c9")
+                .uri("/weather?lat=" + lat + "&lon=" + lon + "&appid=" + System.getenv("APP_ID"))
                 .retrieve()
                 .bodyToMono(APIResponse.class);
     }
