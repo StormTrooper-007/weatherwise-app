@@ -42,30 +42,35 @@ function Home() {
         }
     }
 
-    function handleStart() {
-        if (annyang) {
-            const commands = {
-                "what's the current weather": () => speakWeatherInfo()
-            }
+    console.log(weatherInfo)
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            annyang.addCommands(commands);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            annyang.start();
-        }
-    }
+
 
     useEffect(() => {
         const source = axios.CancelToken.source()
+
+        function handleStart() {
+            if (annyang) {
+                const commands = {
+                    "what's the current weather": () => speakWeatherInfo()
+                }
+
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                annyang.addCommands(commands);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                annyang.start();
+            }
+        }
+
         getCurrentWeatherInfo()
         setTimeout(() => handleStart(), 3000)
         return () => {
-            source.cancel('Request canceled: Component unmounted.')
+            source.cancel('component unmounted')
         }
-    }, [handleStart])
 
+    }, [speakWeatherInfo])
 
     if (isLoading) {
         return (<img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
@@ -74,7 +79,7 @@ function Home() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return (
-        <Box sx={{flexGrow: 1, height: "100vh"}}>
+        <Box sx={{flexGrow: 1, minHeight: 200}} onClick={speakWeatherInfo}>
             <Grid container>
                 <Grid item xs={12}>
                     <Clock weatherInfo={weatherInfo}/>
