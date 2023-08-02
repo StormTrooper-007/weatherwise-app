@@ -53,6 +53,13 @@ export const apiSlice = createApi({
                 }),
                 invalidatesTags: ['Todo']
             }),
+            getUpcoming: build.query<Todo[], void>({
+                query: () => ({url: '/todos/upcoming', method: 'GET'}),
+                providesTags: (result) =>
+                    result
+                        ? [...result.map(({id}) => ({type: 'Todo' as const, id})), 'Todo']
+                        : ['Todo']
+            }),
         }
     }
 })
@@ -60,5 +67,6 @@ export const apiSlice = createApi({
 
 export const {
     useGetTodosQuery,
-    useCreateTodoMutation
+    useCreateTodoMutation,
+    useGetUpcomingQuery
 } = apiSlice;

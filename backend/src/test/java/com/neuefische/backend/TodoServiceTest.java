@@ -29,7 +29,7 @@ class TodoServiceTest {
     void testCreateNewTodo() {
         TodoWithOutId todoWithOutId = new TodoWithOutId(
                 "go out to see friends",
-                "Fri, 25 Aug 2023 02:00:00 GMT"
+                "2023-08-23T15:55:33.000+02:00"
         );
         String nowTime = "2023-7-26T11:19:26.492745400";
 
@@ -55,17 +55,34 @@ class TodoServiceTest {
         String nowTime = "2023-07-27 12:34:56.123456";
 
         when(todoRepository.findAll()).thenReturn(Arrays.asList(
-                new Todo("1", "go bike riding", "Fri, 25 Aug 2023 02:00:00 GMT", Status.OPEN.getStatus(), nowTime),
-                new Todo("1", "go hiking", "Fri, 5 Sep 2023 02:00:00 GMT", Status.OPEN.getStatus(), laterTime)
+                new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", Status.OPEN.getStatus(), nowTime),
+                new Todo("1", "go hiking", "2023-08-23T15:55:33.000+02:00", Status.OPEN.getStatus(), laterTime)
         ));
 
         List<Todo> actual = todoService.getAllTodos();
 
         List<Todo> expected = Arrays.asList(
-                new Todo("1", "go bike riding", "Fri, 25 Aug 2023 02:00:00 GMT", Status.OPEN.getStatus(), nowTime),
-                new Todo("1", "go hiking", "Fri, 5 Sep 2023 02:00:00 GMT", Status.OPEN.getStatus(), laterTime)
+                new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", Status.OPEN.getStatus(), nowTime),
+                new Todo("1", "go hiking", "2023-08-23T15:55:33.000+02:00", Status.OPEN.getStatus(), laterTime)
         );
 
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void getUpcomingTodos() {
+        String nowTime = "2023-07-27 12:34:56.123456";
+        List<Todo> todos = Arrays.asList(
+                new Todo("1", "go hiking", "2023-08-23T15:55:33.000+02:00", Status.OPEN.getStatus(), nowTime)
+        );
+
+        when(dateFormaterService.calcTimeDiffInDays("2023-07-30T15:55:33.000+02:00")).thenReturn((long) 25);
+
+        when(todoRepository.findAll()).thenReturn(todos);
+        List<Todo> actual = Arrays.asList(
+                new Todo("1", "go hiking", "2023-08-23T15:55:33.000+02:00", Status.OPEN.getStatus(), nowTime)
+        );
+        List<Todo> expected = todoService.getUpcomingTodos();
         Assertions.assertEquals(expected, actual);
     }
 }

@@ -17,7 +17,7 @@ function AddTodo() {
         event.preventDefault()
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        await createTodo({plan, startTime: startTime.format()})
+        await createTodo({plan, startTime: startTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")})
         setPlan("")
         setStartTime(dayjs())
     }

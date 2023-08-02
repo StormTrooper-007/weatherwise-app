@@ -1,4 +1,4 @@
-package com.neuefische.backend;
+package com.neuefische.backend.controllers;
 
 import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
@@ -25,6 +25,11 @@ public class TodoController {
     public ResponseEntity<List<Todo>> getAllTodos() {
         List<Todo> todos = todoService.getAllTodos();
         return ResponseEntity.ok(todos);
+    }
+
+    @GetMapping("/upcoming")
+    public List<Todo> getUpcomingTodos() {
+        return todoService.getUpcomingTodos();
     }
 
 }
