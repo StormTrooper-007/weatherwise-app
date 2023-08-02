@@ -38,4 +38,15 @@ public class TodoService {
                 -> dateFormaterService.calcTimeDiffInDays(todo.getStartTime()) < 2).toList();
     }
 
+    public Todo editTodo(TodoWithOutId todoWithOutId, String id) {
+        Todo isEditTodo = todoRepository.findById(id).orElseThrow(() -> new RuntimeException("Todo not found"));
+        isEditTodo.setPlan(todoWithOutId.plan());
+        isEditTodo.setStartTime(todoWithOutId.startTime());
+        return todoRepository.save(isEditTodo);
+    }
+
+    public void deleteTodo(String id) {
+        todoRepository.deleteById(id);
+    }
+
 }

@@ -5,27 +5,26 @@ import './index.css'
 import {Provider} from "react-redux"
 import {store} from "./store.tsx";
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
-import {orange, red, yellow} from "@mui/material/colors";
+import {blue, grey} from "@mui/material/colors";
 
 const theme = createTheme({
     palette: {
         primary: {
-            main: orange[800],
+            main: blue[800],
         },
         secondary: {
-            main: red[800],
-        },
-        background: {
-            default: yellow[50]
+            main: grey[50],
         },
     },
+
     components: {
         MuiButton: {
             variants: [
                 {
-                    props: {variant: 'contained'},
+                    props: {variant: 'outlined'},
                     style: {
-                        textTransform: "none"
+                        textTransform: "none",
+                        padding: 2
                     }
                 }
             ]

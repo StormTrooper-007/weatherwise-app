@@ -2,9 +2,15 @@ import {Box, Typography, Paper} from "@mui/material"
 import {useEffect, useState} from "react"
 import {useTime} from "react-timer-hook"
 import dayjs from "dayjs";
+import {WeatherInfo} from "../utils.tsx";
 
 
-function Clock() {
+type props = {
+    weatherInfo?: WeatherInfo
+}
+
+
+function Clock({weatherInfo}: props) {
     const [dayMood, setDayMood] = useState(false);
     const {
         seconds,
@@ -24,12 +30,9 @@ function Clock() {
                 setDayMood(false);
             }
         }
-
-        // Call the update function initially and every minute
         updateBackgroundColor();
         const interval = setInterval(updateBackgroundColor, 60000);
 
-        // Clean up the interval on component unmount
         return () => clearInterval(interval);
     }, [hours]);
 
@@ -38,19 +41,14 @@ function Clock() {
         switch (dayInNumber) {
             case 0:
                 return "Sunday"
-
             case 1:
                 return "Monday"
-
             case 2:
                 return "Tuesday"
-
             case 3:
                 return "Wednesday"
-
             case 4:
                 return "Thursday"
-
             case 5:
                 return "Friday"
             case 6:
@@ -61,50 +59,42 @@ function Clock() {
     }
 
 
-    function determineMood(weather: string) {
-        let result = ""
-        if (weather === "Clear" && dayMood) {
-            result = "#9adcfb"
-        } else if (weather === "Rain" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Mist" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Snow" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Thunderstorm" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Haze" && dayMood) {
-            result = "#b0c4de"
-        } else if (weather === "Clouds" && dayMood) {
-            result = "#9adcfb"
-        } else if (weather === "Clear" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Rain" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Snow" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Thunderstorm" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Clouds" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Mist" && !dayMood) {
-            result = "#093170"
-        } else if (weather === "Haze" && !dayMood) {
-            result = "#093170"
-        } else {
-            result = ""
-        }
-        return result
+    function determineMood(weather: string, dayMood: boolean) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        const weatherColors: {
+            [key: string]: {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                [key: boolean]: string
+            }
+        } = {
+            "Clear": {true: "#9adcfb", false: "#093170"},
+            "Rain": {true: "#b0c4de", false: "#093170"},
+            "Mist": {true: "#b0c4de", false: "#093170"},
+            "Snow": {true: "#b0c4de", false: "#093170"},
+            "Thunderstorm": {true: "#b0c4de", false: "#093170"},
+            "Haze": {true: "#b0c4de", false: "#093170"},
+            "Clouds": {true: "#9adcfb", false: "#093170"},
+        };
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return weatherColors[weather]?.[dayMood] || "";
     }
 
-    function determineIcon() {
-        let result = ""
-        if ("Clouds" && !dayMood) {
-            result = "/icons8-night-100.png"
-        } else if ("Clouds" && dayMood) {
-            result = "/icons8-night-100.png"
-        }
-        return result
+    const weather = weatherInfo?.weather.find((info: { id: number, main: string, description: string }) => info.main)
+
+
+    function determineIcon(dayMood: boolean, weather: string) {
+        const weatherIcons: { [key: string]: string } = {
+            "Clear": dayMood ? "/icons8-sun-100.png" : "/icons8-moon-100.png",
+            "Rain": "/icons8-rain-100.png",
+            "Snow": dayMood ? "/icons8-snow-100.png" : "/icons8-snowy-night-100.png",
+            "Thunderstorm": dayMood ? "/icons8-storm-100.png" : "/icons8-stormy-night-100.png",
+            "Haze": dayMood ? "/icons8-partly-cloudy-day-100.png" : "/icons8-night-100.png",
+            "Clouds": dayMood ? "/icons8-partly-cloudy-day-100.png" : "/icons8-night-100.png"
+        };
+
+        return weatherIcons[weather] || "";
     }
 
     return (
@@ -112,17 +102,20 @@ function Clock() {
             position: "relative",
             height: 250,
             minWidth: "100%",
-            backgroundColor: determineMood("Haze")
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            backgroundColor: determineMood(weather?.main, dayMood)
         }}>
-            {dayMood ? (
-                <img src="/icons8-sun-100.png" alt={"*"}/>
-            ) : <img src={determineIcon()} alt={"*"}/>}
+            {// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                <img src={determineIcon(dayMood, weather?.main)} alt={"*"}/>
+            }
             <Paper
                 sx={{
                     position: "absolute",
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    backgroundColor: "rgba(255, 255, 255, 0.24)",
                     p: 3,
                     top: 50,
                     left: 110

@@ -32,4 +32,15 @@ public class TodoController {
         return todoService.getUpcomingTodos();
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteTodo(@PathVariable String id) {
+        todoService.deleteTodo(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Todo> editAnimal(@RequestBody TodoWithOutId todoWithOutId, @PathVariable String id) {
+        Todo newTodo = todoService.editTodo(todoWithOutId, id);
+        return ResponseEntity.ok(newTodo);
+    }
+
 }
