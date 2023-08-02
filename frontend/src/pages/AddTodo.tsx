@@ -22,7 +22,6 @@ function AddTodo() {
         setStartTime(dayjs())
     }
 
-
     return (
         <Box
             onSubmit={handleCreateTodo}

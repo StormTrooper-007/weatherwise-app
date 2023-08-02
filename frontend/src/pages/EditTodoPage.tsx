@@ -6,13 +6,20 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DemoContainer, DemoItem} from "@mui/x-date-pickers/internals/demo";
 import {MobileDateTimePicker} from "@mui/x-date-pickers/MobileDateTimePicker";
 import dayjs, {Dayjs} from "dayjs";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {removeId} from "../features/slices/timedOutSlice.ts";
+import {useEditTodoMutation} from "../features/api/apiSlice.tsx";
+import {useNavigate} from "react-router-dom";
+import {RootState} from "../store.tsx";
 
 function EditTodoPage() {
     const [newPlan, setNewPlan] = useState<string>("")
     const [newStatus, setNewStatus] = useState<string>("")
-    const [newStartTime, setNewStartTime] = useState<Dayjs | null>(dayjs());
+    const [newStartTime, setNewStartTime] = useState<Dayjs | null>(dayjs())
+    const [editTodo] = useEditTodoMutation()
+
+    const navigate = useNavigate()
+    const {id} = useSelector((state: RootState) => state.timedOut);
 
     const handleStatusChange = (event: SelectChangeEvent<typeof newStatus>) => {
         const {value} = event.target
@@ -35,6 +42,24 @@ function EditTodoPage() {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [dispatch]);
+
+    async function handleUpdateTodo(id: string) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await editTodo({
+            id,
+            plan: newPlan,
+            status: newStatus,
+            startTime: newStartTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")
+        })
+        dispatch(removeId())
+        setNewPlan("")
+        setNewStatus("")
+        setNewStartTime(dayjs())
+        navigate("/todos")
+
+    }
+
 
     return (
         <Box sx={{
@@ -88,7 +113,7 @@ function EditTodoPage() {
                     </DemoContainer>
                 </LocalizationProvider>
             </Paper>
-            <Button variant="contained" sx={{ml: 12, width: 200}}>Update</Button>
+            <Button variant="contained" sx={{ml: 12, width: 200}} onClick={() => handleUpdateTodo(id)}>Update</Button>
         </Box>
     );
 }

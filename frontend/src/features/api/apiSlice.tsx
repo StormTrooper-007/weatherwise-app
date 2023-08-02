@@ -67,6 +67,14 @@ export const apiSlice = createApi({
                 }),
                 invalidatesTags: ['Todo']
             }),
+            editTodo: build.mutation<void, { id: string, plan: string, startTime: string, status: string }>({
+                query: ({id, plan, startTime, status}) => ({
+                    url: `/todos/${id}`,
+                    method: "PUT",
+                    data: {plan, startTime, status}
+                }),
+                invalidatesTags: ['Todo']
+            }),
         }
     }
 })
@@ -76,5 +84,6 @@ export const {
     useGetTodosQuery,
     useCreateTodoMutation,
     useGetUpcomingQuery,
-    useDeleteTodoMutation
+    useDeleteTodoMutation,
+    useEditTodoMutation
 } = apiSlice;
