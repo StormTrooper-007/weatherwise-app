@@ -11,7 +11,8 @@ const reHydrateStore = () => {
     }
 };
 
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const localStorageMiddleware = ({getState}: any) => {
     return (next: any) => (action: any) => {
         const result = next(action);
