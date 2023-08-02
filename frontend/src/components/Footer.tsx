@@ -12,16 +12,24 @@ function Footer() {
         <Box sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "spaced-evenly",
-            height: 81
+            height: 81,
+            bottom: 1,
+            position: "fixed",
+            m: 0.25
 
         }}>
-            <Button variant="outlined" sx={{p: 3}} startIcon={<HomeIcon sx={{height: 30, width: 30, ml: 1}}/>}/>
-            <Button variant="outlined" sx={{p: 3}} startIcon={<ListAltIcon sx={{height: 30, width: 30, ml: 1}}/>}/>
-            <Button variant="outlined" sx={{p: 3}} startIcon={<GradeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="outlined" sx={{p: 3}} startIcon={<AutoDeleteIcon sx={{height: 30, width: 30, ml: 1}}/>}/>
-            <Button variant="outlined" sx={{p: 3}} startIcon={<SettingsIcon sx={{height: 30, width: 30, ml: 1}}/>}/>
-            <Button variant="outlined" sx={{p: 3}} startIcon={<PersonIcon sx={{height: 30, width: 30, ml: 1}}/>}/>
+            <Button variant="contained" sx={{pt: 2, pb: 2}}
+                    startIcon={<HomeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Button variant="contained" sx={{pt: 2, pb: 2}}
+                    startIcon={<ListAltIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Button variant="contained" sx={{pt: 2, pb: 2}}
+                    startIcon={<GradeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Button variant="contained" sx={{pt: 2, pb: 2}}
+                    startIcon={<AutoDeleteIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Button variant="contained" sx={{pt: 2, pb: 2}}
+                    startIcon={<SettingsIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Button variant="contained" sx={{pt: 2, pb: 2}}
+                    startIcon={<PersonIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
         </Box>
     );
 }

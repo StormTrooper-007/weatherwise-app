@@ -4,7 +4,7 @@ import Footer from "../components/Footer.tsx";
 
 function Protected() {
     return (
-        <Box>
+        <Box sx={{position: "relative"}}>
             <Outlet/>
             <Footer/>
         </Box>

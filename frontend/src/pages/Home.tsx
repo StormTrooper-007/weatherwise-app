@@ -2,7 +2,7 @@ import Clock from "../components/Clock.tsx";
 import {useGetUpcomingQuery} from "../features/api/apiSlice.tsx";
 import {Box, Grid, Typography} from "@mui/material";
 import UpcomingTodoCard from "../components/UpcomingTodoCard.tsx";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import {WeatherInfo} from "../utils.tsx";
 import annyang from 'annyang';
@@ -11,14 +11,14 @@ function Home() {
     const {data, isLoading} = useGetUpcomingQuery()
     const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>()
 
-    async function getCurrentWeatherInfo() {
+    const getCurrentWeatherInfo = useCallback(async () => {
         try {
             const res = await axios.get("/api/weather/48.1351/11.5820")
             await setWeatherInfo(res.data)
         } catch (error) {
             console.log(error)
         }
-    }
+    }, [])
 
     const speakText = (text: string) => {
         const synth = window.speechSynthesis;
@@ -31,46 +31,46 @@ function Home() {
         synth.speak(utterance)
     };
 
-    const weather = weatherInfo?.weather.find((info: { id: number, main: string, description: string }) => info.main)
 
-    function speakWeatherInfo() {
+    console.log(weatherInfo)
+    const speakWeatherInfo = () => {
         if (weatherInfo) {
+            const weather = weatherInfo?.weather.find((info: {
+                id: number,
+                main: string,
+                description: string
+            }) => info.main)
             speakText(`Hello there! Hope you are having a wonderful day? Just a short summary of the weather today...We are having
             ${weather?.description} today, the temperature today is
             ${weatherInfo.main.temp} however it feels like
-            ${weatherInfo.main.feels_like}. Plan your day accordingly. Have a wonderful day!`)
+            ${weatherInfo.main.feels_like}. Remember to plan your day accordingly. Have a wonderful day!`)
         }
     }
 
-    console.log(weatherInfo)
+    function handleStart() {
+        if (annyang) {
+            const commands = {
+                "weather today": () => speakWeatherInfo(),
+            }
 
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            annyang.addCommands(commands);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            annyang.start();
+        }
+    }
 
+    handleStart()
 
     useEffect(() => {
         const source = axios.CancelToken.source()
-
-        function handleStart() {
-            if (annyang) {
-                const commands = {
-                    "what's the current weather": () => speakWeatherInfo()
-                }
-
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
-                annyang.addCommands(commands);
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
-                annyang.start();
-            }
-        }
-
         getCurrentWeatherInfo()
-        setTimeout(() => handleStart(), 3000)
         return () => {
             source.cancel('component unmounted')
         }
-
-    }, [speakWeatherInfo])
+    }, [getCurrentWeatherInfo])
 
     if (isLoading) {
         return (<img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
@@ -84,7 +84,7 @@ function Home() {
                 <Grid item xs={12}>
                     <Clock weatherInfo={weatherInfo}/>
                 </Grid>
-                <Grid item xs={12} sx={{backgroundColor: "#708090"}}>
+                <Grid item xs={12} sx={{backgroundColor: "#708090", minHeight: "100vh"}}>
                     <Typography variant="h3">Upcoming</Typography>
                     {data?.map((upcoming) => (
                         <Box key={upcoming.id}
@@ -99,7 +99,6 @@ function Home() {
                 </Grid>
             </Grid>
         </Box>
-
     );
 }
 

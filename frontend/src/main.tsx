@@ -5,7 +5,7 @@ import './index.css'
 import {Provider} from "react-redux"
 import {store} from "./store.tsx";
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
-import {blue, red} from "@mui/material/colors";
+import {blue, grey} from "@mui/material/colors";
 
 const theme = createTheme({
     palette: {
@@ -13,7 +13,7 @@ const theme = createTheme({
             main: blue[800],
         },
         secondary: {
-            main: red[500],
+            main: grey[50],
         },
     },
 

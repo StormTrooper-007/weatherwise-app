@@ -60,6 +60,13 @@ export const apiSlice = createApi({
                         ? [...result.map(({id}) => ({type: 'Todo' as const, id})), 'Todo']
                         : ['Todo']
             }),
+            deleteTodo: build.mutation<void, string>({
+                query: (id: string) => ({
+                    url: `/todos/${id}`,
+                    method: "DELETE"
+                }),
+                invalidatesTags: ['Todo']
+            }),
         }
     }
 })
@@ -69,4 +76,5 @@ export const {
     useGetTodosQuery,
     useCreateTodoMutation,
     useGetUpcomingQuery,
+    useDeleteTodoMutation
 } = apiSlice;

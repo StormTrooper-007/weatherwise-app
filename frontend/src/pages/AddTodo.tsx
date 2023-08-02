@@ -26,7 +26,7 @@ function AddTodo() {
     return (
         <Box
             onSubmit={handleCreateTodo}
-            style={{
+            sx={{
                 border: "1px solid black",
                 height: "100vh"
             }}
