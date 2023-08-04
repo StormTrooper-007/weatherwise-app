@@ -1,35 +1,39 @@
-import {Box, Button} from "@mui/material";
+import {Box} from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import GradeIcon from '@mui/icons-material/Grade';
 import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
 import SettingsIcon from '@mui/icons-material/Settings';
-import PersonIcon from '@mui/icons-material/Person';
-
 
 function Footer() {
     return (
         <Box sx={{
             display: "flex",
             alignItems: "center",
+            justifyItems: "spaced-evenly",
             height: 81,
+            width: "100%",
             bottom: 1,
+            p: 1,
             position: "fixed",
-            m: 0.25
-
+            backgroundColor: "#35baf6"
         }}>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<HomeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<ListAltIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<GradeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<AutoDeleteIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<SettingsIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<PersonIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Box sx={{border: "1px solid white", p: 2, m: 1, borderRadius: 1}}>
+                <HomeIcon sx={{color: "white"}}/>
+            </Box>
+            <Box sx={{border: "1px solid white", p: 2, m: 1, borderRadius: 1}}>
+                <ListAltIcon sx={{color: "white"}}/>
+            </Box>
+            <Box sx={{border: "1px solid white", p: 2, m: 1, borderRadius: 1}}>
+                <GradeIcon sx={{color: "white"}}/>
+            </Box>
+            <Box sx={{border: "1px solid white", p: 2, m: 1, borderRadius: 1}}>
+                <AutoDeleteIcon sx={{color: "white"}}/>
+            </Box>
+            <Box sx={{border: "1px solid white", p: 2, m: 1, borderRadius: 1}}>
+                <SettingsIcon sx={{color: "white"}}/>
+            </Box>
+
         </Box>
     );
 }

@@ -1,4 +1,4 @@
-package com.neuefische.backend.models;
+package com.neuefische.backend.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,16 +6,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Document("users")
 @AllArgsConstructor
 @NoArgsConstructor
-@Document("todos")
-public class Todo {
+@Data
+public class TodoUser {
     @Id
     private String id;
-    private String plan;
-    private String startTime;
-    private boolean timerStarted;
-    private String createdAt;
-    private String todoUserId;
+    private String username;
+    private String email;
+    private String password;
 }

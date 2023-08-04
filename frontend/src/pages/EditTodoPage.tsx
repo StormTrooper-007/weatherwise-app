@@ -44,12 +44,12 @@ function EditTodoPage() {
     }, [dispatch]);
 
     async function handleUpdateTodo(id: string) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         await editTodo({
             id,
             plan: newPlan,
             status: newStatus,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             startTime: newStartTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")
         })
         dispatch(removeId())

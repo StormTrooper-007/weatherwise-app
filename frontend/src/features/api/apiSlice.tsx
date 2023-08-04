@@ -75,6 +75,16 @@ export const apiSlice = createApi({
                 }),
                 invalidatesTags: ['Todo']
             }),
+            register: build.mutation<void, { username: string, email: string, password: string }>({
+                query: ({username, email, password}) => ({
+                    url: `/users/register`,
+                    method: "POST",
+                    data: {username, email, password}
+                }),
+            }),
+            logout: build.query<string, void>({
+                query: () => ({url: '/users/logout', method: 'GET'}),
+            }),
         }
     }
 })
@@ -85,5 +95,9 @@ export const {
     useCreateTodoMutation,
     useGetUpcomingQuery,
     useDeleteTodoMutation,
-    useEditTodoMutation
+    useEditTodoMutation,
+    useLoginMutation,
+    useRegisterMutation,
+    useGetCurrentUserQuery,
+    useLogoutQuery
 } = apiSlice;

@@ -1,14 +1,14 @@
-import {Box} from "@mui/material";
-import {Outlet} from "react-router-dom";
-import Footer from "../components/Footer.tsx";
+import {Navigate, Outlet} from "react-router-dom";
 
-function Protected() {
+type props = {
+    currentUser: string
+}
+
+function Protected({currentUser}: props) {
+    const authenticatedUser = currentUser === "anonymousUser" ? true : false
     return (
-        <Box sx={{position: "relative"}}>
-            <Outlet/>
-            <Footer/>
-        </Box>
-    );
+        authenticatedUser === false ? <Outlet/> : <Navigate to="/login"/>
+    )
 }
 
 export default Protected;

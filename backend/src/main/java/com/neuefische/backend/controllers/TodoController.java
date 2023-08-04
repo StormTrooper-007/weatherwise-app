@@ -1,5 +1,6 @@
 package com.neuefische.backend.controllers;
 
+import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
 import com.neuefische.backend.services.TodoService;
@@ -9,17 +10,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
 public class TodoController {
+
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<Todo> createNewTodo(@RequestBody TodoWithOutId todoWithOutId) {
-        Todo newTodo = todoService.createNewTodo(todoWithOutId);
-        return ResponseEntity.ok(newTodo);
+    public ResponseEntity<Todo> createNewTodo(@RequestBody TodoWithOutId todoWithOutId) throws UserNotFoundException {
+        try {
+            Todo newTodo = todoService.createNewTodo(todoWithOutId);
+            return ResponseEntity.ok(newTodo);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
     @GetMapping
     public ResponseEntity<List<Todo>> getAllTodos() {
