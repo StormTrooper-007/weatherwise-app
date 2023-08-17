@@ -1,13 +1,28 @@
 import {Navigate, Outlet} from "react-router-dom";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
-type props = {
-    currentUser: string
-}
 
-function Protected({currentUser}: props) {
-    const authenticatedUser = currentUser === "anonymousUser" ? true : false
+function Protected() {
+    const [currentUser, setCurrentUser] = useState<string>("");
+
+
+    function getUser() {
+        axios.get("api/users/user")
+            .then(response => setCurrentUser(response.data))
+            .catch(error => console.log(error))
+    }
+
+    useEffect(() => {
+        getUser()
+    }, [])
+
     return (
-        authenticatedUser === false ? <Outlet/> : <Navigate to="/login"/>
+        currentUser === "anonymousUser"
+            ?
+            <Navigate to="/login"/>
+            :
+            <Outlet/>
     )
 }
 

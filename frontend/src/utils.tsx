@@ -1,11 +1,13 @@
 import {Paper, styled} from "@mui/material";
 
+
 export type Todo = {
     id: string
     plan: string
     startTime: string
-    status: string;
-    createdAt: string;
+    toggleTimer: boolean
+    createdAt: string
+    todoUserId: string
 }
 
 export type WeatherInfo = {
@@ -29,11 +31,12 @@ export type WeatherInfo = {
     }
     name: string
 }
+
 export const Item = styled(Paper)(({theme}) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
     textAlign: 'left',
     color: theme.palette.text.secondary,
-    marginBottom: 4,
+    margin: 4
 }));

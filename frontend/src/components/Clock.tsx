@@ -1,22 +1,27 @@
-import {Box, Typography, Paper} from "@mui/material"
+import {Box, Typography, Paper, Button} from "@mui/material"
+import PersonIcon from '@mui/icons-material/Person';
 import {useEffect, useState} from "react"
 import {useTime} from "react-timer-hook"
 import dayjs from "dayjs";
 import {WeatherInfo} from "../utils.tsx";
+import {determineMood, calcCelsius, determineIcon} from "../functions.ts";
+import Grid from '@mui/material/Grid';
+import axios from "axios"
+import {useSelector, useDispatch} from "react-redux";
+import {removeCurrentUser} from "../features/slices/appSlice.ts";
+import {RootState} from "../store.tsx";
 
 
 type props = {
-    weatherInfo?: WeatherInfo
+    weatherInfo: WeatherInfo
 }
 
 
 function Clock({weatherInfo}: props) {
-    const [dayMood, setDayMood] = useState(false);
-    const {
-        seconds,
-        minutes,
-        hours,
-    } = useTime();
+    const [dayMood, setDayMood] = useState(false)
+    const {currentUser} = useSelector((state: RootState) => state.appState)
+    const {hours} = useTime()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const updateBackgroundColor = () => {
@@ -36,96 +41,72 @@ function Clock({weatherInfo}: props) {
         return () => clearInterval(interval);
     }, [hours]);
 
-    function getDayOfTheWeek() {
-        const dayInNumber = new Date().getDay()
-        switch (dayInNumber) {
-            case 0:
-                return "Sunday"
-            case 1:
-                return "Monday"
-            case 2:
-                return "Tuesday"
-            case 3:
-                return "Wednesday"
-            case 4:
-                return "Thursday"
-            case 5:
-                return "Friday"
-            case 6:
-                return "Saturday"
-            default:
-                return
-        }
-    }
-
-
-    function determineMood(weather: string, dayMood: boolean) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        const weatherColors: {
-            [key: string]: {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                [key: boolean]: string
-            }
-        } = {
-            "Clear": {true: "#9adcfb", false: "#093170"},
-            "Rain": {true: "#b0c4de", false: "#093170"},
-            "Mist": {true: "#b0c4de", false: "#093170"},
-            "Snow": {true: "#b0c4de", false: "#093170"},
-            "Thunderstorm": {true: "#b0c4de", false: "#093170"},
-            "Haze": {true: "#b0c4de", false: "#093170"},
-            "Clouds": {true: "#9adcfb", false: "#093170"},
-        };
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return weatherColors[weather]?.[dayMood] || "";
-    }
-
-    const weather = weatherInfo?.weather.find((info: { id: number, main: string, description: string }) => info.main)
-
-
-    function determineIcon(dayMood: boolean, weather: string) {
-        const weatherIcons: { [key: string]: string } = {
-            "Clear": dayMood ? "/icons8-sun-100.png" : "/icons8-moon-100.png",
-            "Rain": "/icons8-rain-100.png",
-            "Snow": dayMood ? "/icons8-snow-100.png" : "/icons8-snowy-night-100.png",
-            "Thunderstorm": dayMood ? "/icons8-storm-100.png" : "/icons8-stormy-night-100.png",
-            "Haze": dayMood ? "/icons8-partly-cloudy-day-100.png" : "/icons8-night-100.png",
-            "Clouds": dayMood ? "/icons8-partly-cloudy-day-100.png" : "/icons8-night-100.png"
-        };
-
-        return weatherIcons[weather] || "";
+    function logout() {
+        location.reload()
+        dispatch(removeCurrentUser())
+        axios.get("/api/users/logout")
+            .then(response => console.log(response.data))
+            .catch(error => console.log("error occured: " + error))
     }
 
     return (
         <Box sx={{
-            position: "relative",
-            height: 250,
-            minWidth: "100%",
+            flexGrow: 1,
+            p: 2,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            backgroundColor: determineMood(weather?.main, dayMood)
+            backgroundColor: determineMood(weatherInfo?.weather[0]?.main, dayMood)
         }}>
-            {// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                <img src={determineIcon(dayMood, weather?.main)} alt={"*"}/>
-            }
-            <Paper
-                sx={{
-                    position: "absolute",
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "rgba(255, 255, 255, 0.24)",
-                    p: 3,
-                    top: 50,
-                    left: 110
-                }}>
-                <Typography variant="h6">{getDayOfTheWeek()}{"  , "}</Typography>
-                <Typography variant="h4">{hours < 10 && 0}{hours}:</Typography>
-                <Typography variant="h4">{minutes < 10 && 0}{minutes}:</Typography>
-                <Typography variant="h4">{seconds < 10 && 0}{seconds}</Typography>
-            </Paper>
-            <Typography>{dayjs().format('DD/MM/YYYY')}</Typography>
+            <Grid container spacing={4}>
+                <Grid item xs={12}>
+                    <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                        <Box sx={{height: 50}}>
+                            <Box sx={{mb: 5}}>
+                                <img src={determineIcon(dayMood, weatherInfo?.weather[0]?.main)} alt={"*"}/>
+                            </Box>
+                        </Box>
+                        <Box>
+                            <Box sx={{display: "flex", flexDirection: "column"}}>
+                                <Button sx={{color: "white", textTransform: "none"}}
+                                        startIcon={<PersonIcon/>}>
+                                    {currentUser}
+                                </Button>
+                                <form onSubmit={logout}>
+                                    <Button
+                                        type="submit"
+                                        color="primary"
+                                        variant="contained"
+                                        size="small" sx={{textTransform: "none", fontWeight: 900}}>logout</Button>
+                                </form>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Grid>
+                <Grid item xs={6}>
+                    <Box sx={{display: "flex", flexDirection: "column"}}>
+                        <Typography variant="h6" sx={{fontWeight: 900, color: "white"}}>
+                            {calcCelsius(weatherInfo?.main.temp)}&#8451;
+                        </Typography>
+                        <Typography variant="h5" sx={{fontWeight: 900, color: "white"}}>
+                            {weatherInfo?.name}
+                        </Typography>
+                    </Box>
+                </Grid>
+                <Grid item xs={8}>
+                    <Box sx={{ml: 15}}>
+                        <Paper
+                            sx={{
+                                backgroundColor: "rgba(255, 255, 255, 0.24)",
+                                p: 2,
+                                color: "white",
+                                width: 200,
+                                m: 1
+                            }}>
+                            <Typography variant="h6">{dayjs().format('dddd, MMMM D, YYYY h:mm A')}</Typography>
+                        </Paper>
+                    </Box>
+                </Grid>
+            </Grid>
         </Box>
     );
 }

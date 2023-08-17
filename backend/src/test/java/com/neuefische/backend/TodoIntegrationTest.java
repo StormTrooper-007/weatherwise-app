@@ -1,6 +1,8 @@
 package com.neuefische.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neuefische.backend.models.TimedOut;
+import com.neuefische.backend.models.TimedOutWithOutId;
 import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
 import com.neuefische.backend.security.LoginRequest;
@@ -26,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TodoIntegrationTest {
     @Autowired
     TodoRepository todoRepository;
+    @Autowired
+    TimedOutRepository timedOutRepository;
     @Autowired
     TodoService todoService;
     @Autowired
@@ -72,7 +76,7 @@ class TodoIntegrationTest {
     @WithMockUser
     void test_deleteTodo() throws Exception {
         String nowTime = "2023-07-27 12:34:56.123456";
-        Todo newTodo = new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", false, nowTime, "id");
+        Todo newTodo = new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", nowTime, "id");
         todoRepository.save(newTodo);
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/todos/1").with(csrf()))
                 .andExpect(status().isOk());
@@ -83,16 +87,16 @@ class TodoIntegrationTest {
     @WithMockUser
     void testEditTodo() throws Exception {
         String nowTime = "2023-07-27 12:34:56.123456";
-        Todo newTodo = new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", false, nowTime, "1");
+        Todo newTodo = new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", nowTime, "1");
         todoRepository.save(newTodo);
         mockMvc.perform(
                         MockMvcRequestBuilders.put("/api/todos/1")
                                 .with(csrf())
-                                .content(objectMapper.writeValueAsBytes(new Todo("1", "go to church", "2023-09-26T15:55:33.000+02:00", false, nowTime, "1")))
+                                .content(objectMapper.writeValueAsBytes(new Todo("1", "go to church", "2023-09-26T15:55:33.000+02:00", nowTime, "1")))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json("""
-                        {"id": "1", "plan":"go to church", "startTime": "2023-09-26T15:55:33.000+02:00", "timerStarted": false, "createdAt":"2023-07-27 12:34:56.123456", "todoUserId": "1"}
+                        {"id": "1", "plan":"go to church", "startTime": "2023-09-26T15:55:33.000+02:00", "createdAt":"2023-07-27 12:34:56.123456", "todoUserId": "1"}
                         """));
     }
 
@@ -141,5 +145,45 @@ class TodoIntegrationTest {
                 )
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser
+    void testSaveTimeOut() throws Exception {
+        TimedOutWithOutId timedOutWithOutId = new TimedOutWithOutId(
+                "my plan",
+                "2023-08-23T15:55:33.000+02:00",
+                "nowtime", "userId"
+        );
+        String requestBody = objectMapper.writeValueAsString(timedOutWithOutId);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/timedout")
+                        .with(csrf())
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.plan").value("my plan"))
+                .andExpect(jsonPath("$.startTime").value("2023-08-23T15:55:33.000+02:00"))
+                .andExpect(jsonPath("$.createdAt").value("nowtime"));
+    }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser
+    void testGetAllTimedOuts() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/timedout").with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser
+    void testDeleteTimedOut() throws Exception {
+        String id = "1";
+        TimedOut newTimedOut = new TimedOut();
+        timedOutRepository.save(newTimedOut);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/timedout/1").with(csrf()))
+                .andExpect(status().isOk());
+    }
+
 
 }

@@ -11,10 +11,20 @@ import Home from "./pages/Home.tsx";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import Protected from "./pages/Protected.tsx"
+import dayjs, {Dayjs} from "dayjs";
+import TodoView from "./pages/TodoView.tsx"
 
 
 function App() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const [currentUser, setCurrentUser] = useState<string>("");
+
+    const [editItem, setEditItem] = useState<{ plan: string, startTime: Dayjs }>({plan: "", startTime: dayjs()})
+    const [id, setId] = useState<string>("")
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const [edit, setEdit] = useState<boolean>(false)
 
     function getCurrentUser() {
         axios.get("api/users/user")
@@ -26,18 +36,20 @@ function App() {
         getCurrentUser()
     }, [])
 
-    if (currentUser) console.log(currentUser)
 
     const router = createBrowserRouter(
         createRoutesFromElements(
             <>
                 <Route element={<Root/>}>
-                    <Route path={"/"} element={<Protected/>}>
-                        <Route path={"/home"} element={<Home/>}/>
+                    <Route path="/" element={<Protected/>}>
+                        <Route path={"/"} element={<Home/>}/>
                         <Route path="/todo" element={<AddTodo/>}></Route>
-                        <Route path="/todos" element={<Todos/>}></Route>
+                        <Route path="/todos"
+                               element={<Todos setEditItem={setEditItem} setEdit={setEdit} setId={setId}/>}></Route>
                         <Route path="/timedout" element={<TimedOut/>}></Route>
-                        <Route path="/edit" element={<EditTodoPage/>}></Route>
+                        <Route path="/edit" element={<EditTodoPage setEdit={setEdit} setId={setId} id={id}
+                                                                   editItem={editItem}/>}></Route>
+                        <Route path="/plan/:Id" element={<TodoView/>}></Route>
                     </Route>
                     <Route path="/register" element={<RegisterPage/>}></Route>
                     <Route path="/login" element={<LoginPage/>}></Route>

@@ -30,7 +30,6 @@ const axiosBaseQuery =
                 }
             }
         }
-
 export const apiSlice = createApi({
     baseQuery: axiosBaseQuery({
         baseUrl: '/api'
@@ -67,11 +66,11 @@ export const apiSlice = createApi({
                 }),
                 invalidatesTags: ['Todo']
             }),
-            editTodo: build.mutation<void, { id: string, plan: string, startTime: string, status: string }>({
-                query: ({id, plan, startTime, status}) => ({
+            editTodo: build.mutation<void, { id: string, plan: string, startTime: string }>({
+                query: ({id, plan, startTime}) => ({
                     url: `/todos/${id}`,
                     method: "PUT",
-                    data: {plan, startTime, status}
+                    data: {plan, startTime}
                 }),
                 invalidatesTags: ['Todo']
             }),
@@ -82,8 +81,26 @@ export const apiSlice = createApi({
                     data: {username, email, password}
                 }),
             }),
-            logout: build.query<string, void>({
-                query: () => ({url: '/users/logout', method: 'GET'}),
+            saveToTimedOut: build.mutation<{
+                plan: string,
+                startTime: string,
+                toggleTimer: boolean,
+                createdAt: string,
+                todoUserId: string
+            }, { plan: string, startTime: string, toggleTimer: boolean, createdAt: string, todoUserId: string }>({
+                query: ({plan, startTime, toggleTimer, createdAt, todoUserId}) => ({
+                    url: `/timedout`,
+                    method: "POST",
+                    data: {plan, startTime, toggleTimer, createdAt, todoUserId}
+                }),
+                invalidatesTags: ['Todo']
+            }),
+            getTimedOut: build.query<Todo[], void>({
+                query: () => ({url: '/timedout', method: 'GET'}),
+                providesTags: (result) =>
+                    result
+                        ? [...result.map(({id}) => ({type: 'Todo' as const, id})), 'Todo']
+                        : ['Todo']
             }),
         }
     }
@@ -96,8 +113,6 @@ export const {
     useGetUpcomingQuery,
     useDeleteTodoMutation,
     useEditTodoMutation,
-    useLoginMutation,
     useRegisterMutation,
-    useGetCurrentUserQuery,
-    useLogoutQuery
+    useSaveToTimedOutMutation
 } = apiSlice;

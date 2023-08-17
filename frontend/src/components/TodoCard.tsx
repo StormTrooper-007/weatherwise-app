@@ -1,54 +1,124 @@
 import {Item, Todo} from "../utils.tsx";
 import {Box, Button, Typography} from "@mui/material";
 import {useTimer} from "react-timer-hook";
-import dayjs from "dayjs";
-import {useDispatch} from "react-redux";
-import {saveTimedOut, getId} from "../features/slices/timedOutSlice.ts";
+import dayjs, {Dayjs} from "dayjs";
 import {useDeleteTodoMutation} from "../features/api/apiSlice.tsx";
 import {useNavigate} from "react-router-dom";
+import {useEffect} from "react";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import axios from "axios"
 
 
 type props = {
     todo: Todo
+    setEditItem: React.Dispatch<React.SetStateAction<{ plan: string, startTime: Dayjs }>>
+    setId: React.Dispatch<React.SetStateAction<string>>
+    setEdit: React.Dispatch<React.SetStateAction<boolean>>
+    data: Todo[]
 }
 
-function TodoCard({todo}: props) {
+function TodoCard({todo, setEditItem, setId, setEdit}: props) {
 
     const [deleteTodo] = useDeleteTodoMutation()
+    //const [saveToTimedOut] = useSaveToTimedOutMutation()
+
+    //const dispatch = useDispatch();
 
     async function handleDelete(id: string) {
         await deleteTodo(id)
     }
+
+    /*function handleSaveTimedOut(id:string, plan:string, startTime:string, timerStarted:string, createdAt:string, todoUserId:string){
+          dispatch(saveTimedOut(id, plan, startTime, timerStarted, createdAt, todoUserId))
+      }*/
 
     const {days, seconds, minutes, hours} = useTimer({
         expiryTimestamp: dayjs(todo.startTime) as never,
         onExpire: () => console.warn("onExpire called"),
     });
 
-    const dispatch = useDispatch()
     const navigate = useNavigate()
 
     function navigateToEditPage(id: string) {
-        dispatch(getId(id))
+        setId(id)
+        setEdit(prev => !prev)
         navigate("/edit")
     }
 
-    if (days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0) {
-        setTimeout(() => {
-            dispatch(saveTimedOut(todo.id, todo.plan, todo.startTime, todo.status, todo.createdAt))
-            deleteTodo(todo.id)
-        }, 2000)
+    async function handleTimeOutSave() {
+        const data = {
+            plan: todo.plan,
+            startTime: todo.startTime,
+            createdAt: todo.createdAt,
+            toggleTimer: todo.toggleTimer,
+            todoUserId: todo.todoUserId
+        }
+        await axios.post("/api/timedout", data)
     }
+
+    /*  async function toggleTimer(id:string){
+           axios.patch(`/api/todos/${id}`)
+              .then(response => console.log(response.data))
+              .catch(error =>console.log(error))
+      }*/
+
+
+    useEffect(() => {
+        function handleSave() {
+            //await saveToTimedOut(todo.plan, todo.startTime, todo.timerStarted, todo.createdAt, todo.todoUserId)
+            handleTimeOutSave()
+            deleteTodo(todo.id)
+        }
+
+        const timer = setInterval(() => {
+            if (days + hours + minutes + seconds <= 0) {
+                handleSave()
+                clearInterval(timer)
+            }
+        }, 1000)
+        return () => clearInterval(timer)
+
+    }, [days, hours, minutes, seconds, handleSave])
+
 
     return (
         <Box>
-            <Item sx={{display: "flex", flexDirection: "column", justifyContent: "space-evenly", alignItems: "center"}}>
-                <Typography>{todo.plan}</Typography>
-                <Typography> {days} days, {hours}:{minutes}:{seconds} remaining</Typography>
+            <Item sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.85)"
+            }}>
+                <Typography variant="h6" sx={{fontWeight: 900}}>
+                    {todo.plan.length > 25 ? (todo.plan.slice(0, 25) + "...") : (todo.plan)}
+                </Typography>
+                <Typography variant="h6" sx={{fontWeight: 900}}>
+                    {days < 10 ? `${0}${days}` : days} days, {" "}
+                    {hours < 10 ? `${0}${hours}` : hours}
+                    :
+                    {minutes < 10 ? `${0}${minutes}` : minutes}
+                    :
+                    {seconds < 10 ? `${0}${seconds}` : seconds}
+                    {days + hours + minutes + seconds === 0 ? " timeup" : " remaining"}
+                </Typography>
                 <Box>
-                    <Button variant="outlined" sx={{m: 2}}>view</Button>
-                    <Button variant="outlined" sx={{m: 2}} onClick={() => navigateToEditPage(todo.id)}>edit</Button>
-                    <Button variant="outlined" sx={{m: 2}} onClick={() => handleDelete(todo.id)}>delete</Button>
+                    <Button
+                        startIcon={<VisibilityIcon/>}
+                        variant="outlined" sx={{m: 1}}
+                        onClick={() => navigate(`/plan/${todo.id}`)}/>
+                    <Button
+                        startIcon={<EditIcon/>}
+                        sx={{m: 1}}
+                        variant="outlined" onClick={() => {
+                        navigateToEditPage(todo.id)
+                        setEditItem({plan: todo.plan, startTime: dayjs()})
+                    }}/>
+                    <Button
+                        startIcon={<DeleteIcon/>}
+                        variant="outlined" sx={{m: 1}} onClick={() => handleDelete(todo.id)}/>
                 </Box>
             </Item>
         </Box>

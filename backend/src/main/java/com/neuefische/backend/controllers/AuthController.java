@@ -2,7 +2,6 @@ package com.neuefische.backend.controllers;
 
 
 import com.neuefische.backend.security.RegisterRequest;
-import com.neuefische.backend.security.TodoUserDetailsService;
 import com.neuefische.backend.services.TodoUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

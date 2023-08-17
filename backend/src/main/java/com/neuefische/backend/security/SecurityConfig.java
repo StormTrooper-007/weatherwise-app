@@ -37,14 +37,14 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/todos").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/api/todos").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/todos/upcoming").permitAll()
-                                .requestMatchers(HttpMethod.DELETE, "/api/todos/**").authenticated()
-                                .requestMatchers(HttpMethod.PUT, "/api/todos/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/todos/*").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/todos/*").authenticated()
                                 .requestMatchers("/api/todos/**").authenticated()
+                                .requestMatchers("/api/timedout/**").authenticated()
                                 .requestMatchers("/api/weather/**").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .logout(logout -> logout.logoutUrl("/api/users/logout")
-
                 )
                 .formLogin(Customizer.withDefaults())
                 .build();

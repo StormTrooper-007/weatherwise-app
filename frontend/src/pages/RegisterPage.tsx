@@ -1,4 +1,5 @@
 import {Box, Button, Paper, TextField} from "@mui/material";
+import {Typography} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {useRegisterMutation} from "../features/api/apiSlice.tsx";
 
@@ -24,6 +25,9 @@ function RegisterPage() {
     return (
         <Box>
             <div>{message}</div>
+            <Box sx={{mt: 10, ml: 24}}>
+                <Typography sx={{fontFamily: 'Rajdhani', fontSize: 20, fontWeight: 'bold'}}>Sign up</Typography>
+            </Box>
             <Box
                 sx={{mt: 10}}
                 component="form"
@@ -45,7 +49,7 @@ function RegisterPage() {
                                type="password" variant="outlined"/>
                     <TextField onChange={(e) => setRepeatPassword(e.target.value)} sx={{mb: 2}} label="repeat password"
                                type="password" variant="outlined"/>
-                    <Button variant="contained" type="submit" sx={{width: 100, ml: 13}}>Register</Button>
+                    <Button variant="contained" type="submit" sx={{width: 100, ml: 13}}>Send</Button>
                 </Paper>
             </Box>
         </Box>

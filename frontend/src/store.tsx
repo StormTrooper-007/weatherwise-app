@@ -1,7 +1,6 @@
 import {configureStore} from "@reduxjs/toolkit";
 import {apiSlice} from "./features/api/apiSlice.tsx";
-import timeOutReducer from "./features/slices/timedOutSlice.ts"
-
+import appReducer from "./features/slices/appSlice.ts"
 
 const reHydrateStore = () => {
     if (localStorage.getItem('applicationState') !== null) {
@@ -23,7 +22,7 @@ const localStorageMiddleware = ({getState}: any) => {
 export const store = configureStore({
     reducer: {
         [apiSlice.reducerPath]: apiSlice.reducer,
-        timedOut: timeOutReducer
+        appState: appReducer
     },
     preloadedState: reHydrateStore(),
     middleware: (getDefaultMiddleware) =>

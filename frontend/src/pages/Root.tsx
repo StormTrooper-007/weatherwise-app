@@ -1,12 +1,18 @@
-import {Box} from "@mui/material";
+import {Box, Grid} from "@mui/material";
 import {Outlet} from "react-router-dom";
 import Footer from "../components/Footer.tsx";
 
 function Root() {
     return (
         <Box sx={{position: "relative"}}>
-            <Outlet/>
-            <Footer/>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Outlet/>
+                </Grid>
+                <Grid item xs={12}>
+                    <Footer/>
+                </Grid>
+            </Grid>
         </Box>
     );
 }

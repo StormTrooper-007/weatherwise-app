@@ -26,11 +26,11 @@ public class TodoUserController {
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-        SecurityContextHolder.clearContext();
         return ResponseEntity.ok("logged out successfully");
     }
 

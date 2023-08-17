@@ -1,42 +1,58 @@
-import {Box, Button, Paper, TextField} from "@mui/material";
+import {Button, Paper, TextField, Typography, Box} from "@mui/material";
 import {FormEvent, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {getCurrentUser} from "../features/slices/appSlice.ts";
+import {RootState} from "../store.tsx";
+import {toggleLoginStatus} from "../features/slices/appSlice.ts";
 
 function LoginPage() {
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    const [loggedInUser, setLoggedInUser] = useState<string>("");
+    //const [loggedInUser, setLoggedInUser] = useState<string>("")
+    const {currentUser} = useSelector((state: RootState) => state.appState)
+
+    const dispatch = useDispatch()
 
 
     function handleLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
+        dispatch(toggleLoginStatus())
         axios.post("/api/users/login", {username, password},
             {auth: {username, password}, headers: {'Content-Type': 'application/json'}})
-            .then((response) => setLoggedInUser(response.data))
+            .then((response) => dispatch(getCurrentUser(response.data)))
             .catch((error) => console.log(error))
         setUsername("")
         setPassword("")
-    }
-
-    function handleLogout() {
-        axios.get("api/users/logout")
-            .then(response => setMessage(response.data))
-            .catch(error => console.log(error))
+        if (currentUser !== "anonymousUser") {
+            navigate("/")
+        }
     }
 
     const navigate = useNavigate();
 
-
-    if (logedInUser) {
-        navigate("/home")
-    }
-
     return (
-        <>
-            <Box
-                component="form"
-                autoComplete="off"
+        <Box>
+            <Box sx={{display: "flex", justifyContent: "space-between"}}>
+                <Box sx={{mt: 10, ml: 2}}>
+                    <img src="/icons8-partly-cloudy-day.gif" alt="*" style={{marginLeft: 150}}/>
+                    <Typography variant="h4" sx={{fontFamily: 'Rajdhani', fontSize: 18, fontWeight: 'bold'}}>
+                        plan your day better witn weatherwise
+                    </Typography>
+                </Box>
+                <Box sx={{height: 30, p: 1, pb: 5}}>
+                    <Typography onClick={() => navigate("/register")}
+                                sx={{fontFamily: 'Rajdhani', fontWeight: 'bold', fontSize: 20}}
+                    >sign-up</Typography>
+                </Box>
+            </Box>
+            <Box sx={{mt: 10, ml: 25}}>
+                <Typography sx={{fontFamily: 'Rajdhani', fontWeight: 'bold', fontSize: 20}}>Login</Typography>
+            </Box>
+
+
+            <form
                 onSubmit={handleLogin}
             >
                 <Paper sx={{
@@ -59,11 +75,9 @@ function LoginPage() {
                                value={password}
                                variant="outlined"/>
                     <Button variant="contained" type="submit" sx={{width: 100, ml: 13}}>Login</Button>
-
                 </Paper>
-            </Box>
-            <Button onClick={handleLogout}>Logout</Button>
-        </>
+            </form>
+        </Box>
     );
 }
 

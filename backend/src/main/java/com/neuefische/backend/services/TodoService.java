@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 @Service
@@ -19,16 +21,21 @@ public class TodoService {
     private final DateFormaterService dateFormaterService;
     private final TodoUserService todoUserService;
 
+    Logger logger = Logger.getLogger(TodoService.class.getName());
 
-    public Todo createNewTodo(TodoWithOutId todoWithOutId) throws UserNotFoundException {
+
+    public Todo createNewTodo(TodoWithOutId todoWithOutId) {
         Todo newTodo = new Todo();
         newTodo.setId(uuidService.generateNewId());
         newTodo.setPlan(todoWithOutId.plan());
         newTodo.setStartTime(todoWithOutId.startTime());
-        newTodo.setTimerStarted(false);
         newTodo.setCreatedAt(dateFormaterService.getTimeStamp());
-        newTodo.setTodoUserId(todoUserService.getCurrentUserId().getId());
         todoRepository.save(newTodo);
+        try {
+            newTodo.setTodoUserId(todoUserService.getCurrentUserId().getId());
+        } catch (UserNotFoundException userNotFoundException) {
+            logger.log(Level.INFO, userNotFoundException.getMessage());
+        }
         return newTodo;
     }
 
@@ -51,6 +58,5 @@ public class TodoService {
     public void deleteTodo(String id) {
         todoRepository.deleteById(id);
     }
-
 
 }
