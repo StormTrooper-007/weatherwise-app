@@ -92,8 +92,8 @@ function TodoView() {
             <Card sx={{maxWidth: 345, ml: 5.5, mt: 9}}>
                 <CardMedia
                     sx={{height: 250, backgroundColor: getBackGroundColor(weatherInfo?.weather[0]?.main)}}
-                    image={getIcon(weatherInfo?.weather[0]?.main)}
-                    title="green iguana"
+                    image={isLoading ? "*" : getIcon(weatherInfo?.weather[0]?.main)}
+                    title="weather foto"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">

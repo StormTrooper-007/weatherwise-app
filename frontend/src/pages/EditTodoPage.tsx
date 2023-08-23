@@ -13,6 +13,7 @@ type props = {
     editItem: { plan: string, startTime: Dayjs }
     setId: React.Dispatch<React.SetStateAction<string>>
     setEdit: React.Dispatch<React.SetStateAction<boolean>>
+    edit: boolean
     id: string
 }
 

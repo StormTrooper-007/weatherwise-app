@@ -1,22 +1,10 @@
 import {Navigate, Outlet} from "react-router-dom";
-import {useEffect, useState} from "react";
-import axios from "axios";
+import {useSelector} from "react-redux";
+import {RootState} from "../store.tsx";
 
 
 function Protected() {
-    const [currentUser, setCurrentUser] = useState<string>("");
-
-
-    function getUser() {
-        axios.get("api/users/user")
-            .then(response => setCurrentUser(response.data))
-            .catch(error => console.log(error))
-    }
-
-    useEffect(() => {
-        getUser()
-    }, [])
-
+    const {currentUser} = useSelector((state: RootState) => state.appState)
     return (
         currentUser === "anonymousUser"
             ?

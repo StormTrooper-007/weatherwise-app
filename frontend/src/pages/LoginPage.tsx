@@ -1,4 +1,4 @@
-import {Button, Paper, TextField, Typography, Box} from "@mui/material";
+import {Button, Paper, TextField, Typography, Box, Alert} from "@mui/material";
 import {FormEvent, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
@@ -10,35 +10,38 @@ import {toggleLoginStatus} from "../features/slices/appSlice.ts";
 function LoginPage() {
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    //const [loggedInUser, setLoggedInUser] = useState<string>("")
-    const {currentUser} = useSelector((state: RootState) => state.appState)
+    const {loginStatus, currentUser} = useSelector((state: RootState) => state.appState)
+    const [errorM, setErrorM] = useState<string>("")
 
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
 
     function handleLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        dispatch(toggleLoginStatus())
         axios.post("/api/users/login", {username, password},
             {auth: {username, password}, headers: {'Content-Type': 'application/json'}})
-            .then((response) => dispatch(getCurrentUser(response.data)))
-            .catch((error) => console.log(error))
+            .then((response) => {
+                if (response.data !== null) {
+                    dispatch(toggleLoginStatus())
+                    dispatch(getCurrentUser(response.data))
+                    if (!loginStatus) navigate("/")
+                }
+            })
+            .catch((error) => setErrorM("wrong credentials"))
         setUsername("")
         setPassword("")
-        if (currentUser !== "anonymousUser") {
-            navigate("/")
-        }
     }
 
-    const navigate = useNavigate();
 
     return (
         <Box>
+            {errorM !== "" && <Alert severity="error">{errorM}</Alert>}
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
                 <Box sx={{mt: 10, ml: 2}}>
                     <img src="/icons8-partly-cloudy-day.gif" alt="*" style={{marginLeft: 150}}/>
                     <Typography variant="h4" sx={{fontFamily: 'Rajdhani', fontSize: 18, fontWeight: 'bold'}}>
-                        plan your day better witn weatherwise
+                        plan your day better with weatherwise
                     </Typography>
                 </Box>
                 <Box sx={{height: 30, p: 1, pb: 5}}>

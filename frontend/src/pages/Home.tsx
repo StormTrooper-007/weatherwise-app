@@ -8,7 +8,13 @@ import axios from "axios";
 import {WeatherInfo} from "../utils.tsx";
 import {useSelector, useDispatch} from "react-redux";
 import {RootState} from "../store.tsx";
-import {toggleLoginStatus} from "../features/slices/appSlice.ts";
+import {
+    toggleLoginStatus,
+    getWeatherInfoMessage,
+    removeWeatherInfoMessage,
+    toggleWeatherInfoMessage
+} from "../features/slices/appSlice.ts";
+import {useNavigate} from "react-router-dom";
 
 
 function Home() {
@@ -31,15 +37,24 @@ function Home() {
         name: ""
     })
 
-    const {loginStatus, currentUser} = useSelector((state: RootState) => state.appState)
+    const {
+        loginStatus,
+        currentUser,
+        weatherInfoMessage,
+        showWeatherInfoMessage
+    } = useSelector((state: RootState) => state.appState)
     const dispatch = useDispatch()
+    const [errorM, setErrorM] = useState<string>("")
 
     const getCurrentWeatherInfo = useCallback(async () => {
         try {
             const res = await axios.get("/api/weather/48.1351/11.5820")
             await setWeatherInfo(res.data)
+            dispatch(getWeatherInfoMessage("success", ""))
+            dispatch(toggleWeatherInfoMessage())
         } catch (error) {
-            console.log(error)
+            setErrorM(error.message)
+            dispatch(getWeatherInfoMessage("", error.message))
         }
     }, [])
 
@@ -51,9 +66,11 @@ function Home() {
             source.cancel('component unmounted')
         }
     }, [getCurrentWeatherInfo])
-    if (isLoading) {
-        return (<img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
-    }
+
+    const navigate = useNavigate()
+
+    if (isLoading) return (
+        <img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -61,6 +78,14 @@ function Home() {
         <Box sx={{flexGrow: 1, minHeight: 200}}>
             {!loginStatus && <Alert severity="success" onClick={() => dispatch(toggleLoginStatus())}>
                 logged in as {currentUser}
+            </Alert>}
+            {!showWeatherInfoMessage && <Alert severity="success" onClick={() => dispatch(toggleWeatherInfoMessage())}>
+                {weatherInfo !== null && weatherInfoMessage.success}
+            </Alert>}
+            {errorM !== "" && <Alert severity="error" onClick={() => {
+                setErrorM("")
+            }}>
+                {errorM}
             </Alert>}
             <Grid container>
                 <Grid item xs={12}>
@@ -90,6 +115,7 @@ function Home() {
                                  display: "flex",
                                  justifyContent: "space-between",
                              }}
+                             onClick={() => navigate("/todos")}
                         >
                             <UpcomingTodoCard upcoming={upcoming}/>
                         </Box>

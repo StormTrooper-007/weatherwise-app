@@ -11,6 +11,11 @@ type TodoMessage = {
     error: string
 }
 
+type WeatherInfoMessage = {
+    success: string
+    error: string
+}
+
 export const appSlice = createSlice({
     name: "appSlice",
     initialState: {
@@ -23,7 +28,12 @@ export const appSlice = createSlice({
             success: "",
             error: ""
         },
-        loginStatus: false
+        weatherInfoMessage: {
+            success: "",
+            error: ""
+        },
+        loginStatus: false,
+        showWeatherInfoMessage: false
     },
     reducers: {
         getCurrentUser: {
@@ -80,12 +90,36 @@ export const appSlice = createSlice({
                     error: ""
                 }
             },
+        getWeatherInfoMessage: {
+            reducer: (state, action: PayloadAction<WeatherInfoMessage>) => {
+                state.weatherInfoMessage = action.payload
+            },
+            prepare: (success: string, error: string) => {
+                return {
+                    payload: {
+                        success, error
+                    }
+                }
+            }
+        },
+        removeWeatherInfoMessage:
+            (state) => {
+                state.weatherInfoMessage = {
+                    success: "",
+                    error: ""
+                }
+            },
         toggleLoginStatus:
             state => {
                 state.loginStatus = !state.loginStatus
-            }
+            },
+        toggleWeatherInfoMessage:
+            state => {
+                state.showWeatherInfoMessage = !state.showWeatherInfoMessage
+            },
     }
 })
+
 
 export const {
     getCurrentUser,
@@ -94,7 +128,10 @@ export const {
     removeLoginMessage,
     getTodoMessage,
     removeTodoMessage,
-    toggleLoginStatus
+    toggleLoginStatus,
+    removeWeatherInfoMessage,
+    getWeatherInfoMessage,
+    toggleWeatherInfoMessage
 } = appSlice.actions
 
 export default appSlice.reducer

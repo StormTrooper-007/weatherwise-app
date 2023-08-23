@@ -1,33 +1,48 @@
-import {Box, Button, Paper, TextField} from "@mui/material";
-import {Typography} from "@mui/material";
-import {FormEvent, useState} from "react";
-import {useRegisterMutation} from "../features/api/apiSlice.tsx";
+import {Box, Button, Paper, TextField} from "@mui/material"
+import {Typography} from "@mui/material"
+import {FormEvent, useState} from "react"
+import {useRegisterMutation} from "../features/api/apiSlice.tsx"
+import {Alert} from "@mui/material";
+import {useNavigate} from "react-router-dom"
 
 function RegisterPage() {
     const [username, setUsername] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [repeatPassword, setRepeatPassword] = useState<string>("")
-    const [register, {isError, isSuccess, data}] = useRegisterMutation()
-    const [message, setMessage] = useState<string>("")
+    const [register, {isError, isSuccess, data, error}] = useRegisterMutation()
+    const [errorM, setErrorM] = useState<string>("")
+    const [successMessage, setSuccessMessage] = useState<string>("")
+
+
+    const navigate = useNavigate()
 
     async function handleRegisterNewUser(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
         if (password === repeatPassword) await register({username, email, password})
-        if (isError) return
-        if (isSuccess && data != undefined) setMessage(data)
+        if (isError) return setErrorM(error.data.error)
+        if (isSuccess && data != undefined) {
+            setSuccessMessage(data)
+            setTimeout(() => {
+                navigate("/login")
+            }, 3000)
+        }
         setUsername("")
         setEmail("")
         setPassword("")
         setRepeatPassword("")
+
     }
+
 
     return (
         <Box>
-            <div>{message}</div>
+            {errorM && <Alert severity="error" onClick={() => setErrorM("")}>{errorM}</Alert>}
+            {successMessage && <Alert severity="success" onClick={() => setSuccessMessage("")}>{successMessage}</Alert>}
             <Box sx={{mt: 10, ml: 24}}>
                 <Typography sx={{fontFamily: 'Rajdhani', fontSize: 20, fontWeight: 'bold'}}>Sign up</Typography>
             </Box>
+            <img src="*" alt="*" style={{ml: 20}}/>
             <Box
                 sx={{mt: 10}}
                 component="form"

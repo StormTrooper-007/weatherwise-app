@@ -4,7 +4,7 @@ import {useTimer} from "react-timer-hook";
 import dayjs, {Dayjs} from "dayjs";
 import {useDeleteTodoMutation} from "../features/api/apiSlice.tsx";
 import {useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,17 +22,11 @@ type props = {
 function TodoCard({todo, setEditItem, setId, setEdit}: props) {
 
     const [deleteTodo] = useDeleteTodoMutation()
-    //const [saveToTimedOut] = useSaveToTimedOutMutation()
-
-    //const dispatch = useDispatch();
 
     async function handleDelete(id: string) {
         await deleteTodo(id)
     }
 
-    /*function handleSaveTimedOut(id:string, plan:string, startTime:string, timerStarted:string, createdAt:string, todoUserId:string){
-          dispatch(saveTimedOut(id, plan, startTime, timerStarted, createdAt, todoUserId))
-      }*/
 
     const {days, seconds, minutes, hours} = useTimer({
         expiryTimestamp: dayjs(todo.startTime) as never,
@@ -58,20 +52,17 @@ function TodoCard({todo, setEditItem, setId, setEdit}: props) {
         await axios.post("/api/timedout", data)
     }
 
-    /*  async function toggleTimer(id:string){
-           axios.patch(`/api/todos/${id}`)
-              .then(response => console.log(response.data))
-              .catch(error =>console.log(error))
-      }*/
+    const handleSave = useCallback(() => {
+        handleTimeOutSave()
+        deleteTodo(todo.id)
 
+    }, [])
+
+    /*function handleSave() {
+
+    }*/
 
     useEffect(() => {
-        function handleSave() {
-            //await saveToTimedOut(todo.plan, todo.startTime, todo.timerStarted, todo.createdAt, todo.todoUserId)
-            handleTimeOutSave()
-            deleteTodo(todo.id)
-        }
-
         const timer = setInterval(() => {
             if (days + hours + minutes + seconds <= 0) {
                 handleSave()
@@ -80,7 +71,7 @@ function TodoCard({todo, setEditItem, setId, setEdit}: props) {
         }, 1000)
         return () => clearInterval(timer)
 
-    }, [days, hours, minutes, seconds, handleSave])
+    }, [days, hours, minutes, seconds])
 
 
     return (

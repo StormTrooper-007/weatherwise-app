@@ -1,6 +1,7 @@
 package com.neuefische.backend.services;
 
 import com.neuefische.backend.TodoRepository;
+import com.neuefische.backend.exceptions.BadRequestException;
 import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.Todo;
 import com.neuefische.backend.models.TodoWithOutId;
@@ -24,19 +25,19 @@ public class TodoService {
     Logger logger = Logger.getLogger(TodoService.class.getName());
 
 
-    public Todo createNewTodo(TodoWithOutId todoWithOutId) {
+    public String createNewTodo(TodoWithOutId todoWithOutId) throws UserNotFoundException, BadRequestException {
         Todo newTodo = new Todo();
         newTodo.setId(uuidService.generateNewId());
         newTodo.setPlan(todoWithOutId.plan());
         newTodo.setStartTime(todoWithOutId.startTime());
         newTodo.setCreatedAt(dateFormaterService.getTimeStamp());
-        todoRepository.save(newTodo);
         try {
             newTodo.setTodoUserId(todoUserService.getCurrentUserId().getId());
-        } catch (UserNotFoundException userNotFoundException) {
-            logger.log(Level.INFO, userNotFoundException.getMessage());
+        } catch (UserNotFoundException ex) {
+            throw new UserNotFoundException("User not found");
         }
-        return newTodo;
+        todoRepository.save(newTodo);
+        return "new plan created successfully";
     }
 
     public List<Todo> getAllTodos() {

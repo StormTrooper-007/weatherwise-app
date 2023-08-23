@@ -14,7 +14,7 @@ import {RootState} from "../store.tsx";
 function AddTodo() {
     const [plan, setPlan] = useState<string>("");
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
-    const [createTodo, {isError, isSuccess}] = useCreateTodoMutation();
+    const [createTodo, {isError, isSuccess, error}] = useCreateTodoMutation();
 
     const dispatch = useDispatch()
     const {todoMessage} = useSelector((state: RootState) => state.appState)
@@ -30,7 +30,8 @@ function AddTodo() {
             dispatch(getTodoMessage("new plan created successfully", ""))
         }
         if (isError) {
-            dispatch(getTodoMessage("", "error creating new plan"))
+            console.log(error.data.error)
+            dispatch(getTodoMessage("", "error creating new plan, invalid input!"))
         }
     }
 
@@ -50,7 +51,7 @@ function AddTodo() {
             autoComplete="off"
         >
             {isSuccess && <Alert severity="success">{todoMessage.success}</Alert>}
-            {isError && <Alert severity="error">{todoMessage.success}</Alert>}
+            {isError && <Alert severity="error">{todoMessage.error}</Alert>}
             <Paper sx={{m: 5, p: 5}}>
                 <TextField
                     label="what's your plan?"

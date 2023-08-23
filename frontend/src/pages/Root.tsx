@@ -1,6 +1,6 @@
-import {Box, Grid} from "@mui/material";
-import {Outlet} from "react-router-dom";
-import Footer from "../components/Footer.tsx";
+import {Box, Grid} from "@mui/material"
+import {Outlet} from "react-router-dom"
+import Footer from "../components/Footer.tsx"
 
 function Root() {
     return (

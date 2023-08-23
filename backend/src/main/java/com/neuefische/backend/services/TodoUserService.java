@@ -21,16 +21,13 @@ public class TodoUserService {
 
     public TodoUser getCurrentUserId() throws UserNotFoundException {
         return todoUserRepository.findByUsername(getCurrentUserName())
-                .orElseThrow(() -> new UserNotFoundException("Not logged in"));
+                .orElseThrow(() -> new UserNotFoundException("User not logged in"));
 
     }
 
-    public TodoUser registerNewUser(String username, String email, String password) {
-        if (
-                todoUserRepository.findByUsername(username).isPresent() &&
-                        todoUserRepository.findUserByEmail(email).isPresent()
-        ) {
-            throw new IllegalArgumentException("user already Exists");
+    public TodoUser registerNewUser(String username, String email, String password) throws IllegalArgumentException {
+        if (todoUserRepository.findByUsername(username).isPresent() && todoUserRepository.findUserByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("User already Exists");
         }
 
         TodoUser newUser = new TodoUser();

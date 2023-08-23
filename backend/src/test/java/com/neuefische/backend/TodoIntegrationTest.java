@@ -1,6 +1,7 @@
 package com.neuefische.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.TimedOut;
 import com.neuefische.backend.models.TimedOutWithOutId;
 import com.neuefische.backend.models.Todo;
@@ -10,6 +11,7 @@ import com.neuefische.backend.security.RegisterRequest;
 import com.neuefische.backend.services.TodoService;
 import com.neuefische.backend.services.TodoUserService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,19 +43,23 @@ class TodoIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    TodoService todooService = mock(TodoService.class);
+
+
     @Test
     @DirtiesContext
     @WithMockUser
     void testCreateTodo() throws Exception {
+        doThrow(new UserNotFoundException("Sorry could not find user"))
+                .when(todooService).createNewTodo(Mockito.any(TodoWithOutId.class));
         TodoWithOutId todoWithOutId = new TodoWithOutId("play football", "2023-08-23T15:55:33.000+02:00");
         String requestBody = objectMapper.writeValueAsString(todoWithOutId);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/todos")
                         .with(csrf())
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.plan").value("play football"))
-                .andExpect(jsonPath("$.startTime").value("2023-08-23T15:55:33.000+02:00"));
+                .andExpect(status().is(404))
+                .andExpect(content().string("Sorry could not find user"));
     }
 
     @Test
@@ -127,7 +135,7 @@ class TodoIntegrationTest {
     @DirtiesContext
     @WithMockUser
     void testRegsiterUser() throws Exception {
-        RegisterRequest registerRequest = new RegisterRequest("collins", "chigbo.c.o@gmail.com", "abcd");
+        RegisterRequest registerRequest = new RegisterRequest("collins", "chigbo.c.o@gmail.com", "abcdefghijklmn");
         mockMvc.perform(MockMvcRequestBuilders.post("/api/users/register")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(registerRequest))

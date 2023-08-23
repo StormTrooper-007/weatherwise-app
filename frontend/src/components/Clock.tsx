@@ -8,7 +8,7 @@ import {determineMood, calcCelsius, determineIcon} from "../functions.ts";
 import Grid from '@mui/material/Grid';
 import axios from "axios"
 import {useSelector, useDispatch} from "react-redux";
-import {removeCurrentUser} from "../features/slices/appSlice.ts";
+import {removeCurrentUser, toggleLoginStatus} from "../features/slices/appSlice.ts";
 import {RootState} from "../store.tsx";
 
 
@@ -44,6 +44,7 @@ function Clock({weatherInfo}: props) {
     function logout() {
         location.reload()
         dispatch(removeCurrentUser())
+        dispatch(toggleLoginStatus())
         axios.get("/api/users/logout")
             .then(response => console.log(response.data))
             .catch(error => console.log("error occured: " + error))

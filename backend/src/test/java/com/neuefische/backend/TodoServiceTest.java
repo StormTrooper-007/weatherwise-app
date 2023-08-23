@@ -1,5 +1,6 @@
 package com.neuefische.backend;
 
+import com.neuefische.backend.exceptions.BadRequestException;
 import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.TimedOut;
 import com.neuefische.backend.models.TimedOutWithOutId;
@@ -33,24 +34,18 @@ class TodoServiceTest {
     );
 
     @Test
-    void testCreateNewTodo() throws UserNotFoundException {
+    void testCreateNewTodo() throws UserNotFoundException, BadRequestException {
         TodoWithOutId todoWithOutId = new TodoWithOutId(
                 "my plan",
                 "start time"
         );
         String nowTime = "2023-7-26T11:19:26.492745400";
 
-        Todo expected = new Todo(
-                "1",
-                "my plan",
-                "start time",
-                nowTime,
-                "1"
-        );
+        String expected = "new plan created successfully";
         when(uuidService.generateNewId()).thenReturn("1");
         when(dateFormaterService.getTimeStamp()).thenReturn(nowTime);
         when(todoUserService.getCurrentUserId()).thenReturn(new TodoUser("1", "username", "email", "password"));
-        Todo actual = todoService.createNewTodo(todoWithOutId);
+        String actual = todoService.createNewTodo(todoWithOutId);
         Assertions.assertEquals(expected, actual);
     }
 

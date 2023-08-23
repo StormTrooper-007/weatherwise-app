@@ -17,7 +17,7 @@ function UpcomingTodoCard({upcoming}: props) {
             m: 2
         }}>
             <Typography
-                sx={{fontWeight: 900}}>Plan:{upcoming?.plan.length > 25 ? upcoming.plan.slice(0, 25) : upcoming.plan}</Typography>
+                sx={{fontWeight: 900}}>Plan:{upcoming?.plan.length > 25 ? upcoming.plan.slice(0, 25) + "..." : upcoming.plan}</Typography>
             <Typography
                 sx={{fontWeight: 900}}>Starting: {dayjs(upcoming?.startTime).format('ddd, MMM D, YYYY h:mm A')}</Typography>
         </Box>
