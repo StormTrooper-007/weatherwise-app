@@ -1,5 +1,4 @@
-import {Box, Button, Paper, TextField} from "@mui/material"
-import {Typography, Alert} from "@mui/material"
+import {Box, Button, Paper, TextField, Typography, Alert} from "@mui/material"
 import {FormEvent, useState} from "react"
 import {useRegisterMutation} from "../features/api/apiSlice.tsx"
 import {useNavigate} from "react-router-dom"
