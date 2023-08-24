@@ -8,3 +8,5 @@ public record MainInfo(
         double temp_max
 ) {
 }
+
+

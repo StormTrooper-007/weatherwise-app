@@ -6,3 +6,6 @@ public record Weather(
         String description
 ) {
 }
+
+
+

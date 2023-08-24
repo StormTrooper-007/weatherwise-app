@@ -19,3 +19,5 @@ public class WeatherApiController {
         return weatherApiService.getCurrentWeatherInfo(lat, lon);
     }
 }
+
+

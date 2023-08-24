@@ -10,3 +10,6 @@ public interface TodoUserRepository extends MongoRepository<TodoUser, String> {
     Optional<TodoUser> findUserByEmail(String email);
 
 }
+
+
+

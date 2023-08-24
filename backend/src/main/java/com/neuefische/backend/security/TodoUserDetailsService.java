@@ -21,6 +21,6 @@ public class TodoUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found!"));
         return new User(todoUser.getUsername(), todoUser.getPassword(), Collections.emptyList());
     }
-
-
 }
+
+
