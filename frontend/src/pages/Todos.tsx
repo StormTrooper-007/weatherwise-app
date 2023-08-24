@@ -1,6 +1,5 @@
-import {Box, List} from "@mui/material";
+import {Box, List, Typography} from "@mui/material";
 import {useGetTodosQuery} from "../features/api/apiSlice.tsx";
-import {Typography} from "@mui/material";
 import TodoCard from "../components/TodoCard.tsx";
 import {blueGrey} from "@mui/material/colors";
 import {Dayjs} from "dayjs";

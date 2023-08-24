@@ -11,7 +11,6 @@ import {RootState} from "../store.tsx";
 import {
     toggleLoginStatus,
     getWeatherInfoMessage,
-    removeWeatherInfoMessage,
     toggleWeatherInfoMessage
 } from "../features/slices/appSlice.ts";
 import {useNavigate} from "react-router-dom";

@@ -3,14 +3,13 @@ import {FormEvent, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {getCurrentUser} from "../features/slices/appSlice.ts";
 import {RootState} from "../store.tsx";
-import {toggleLoginStatus} from "../features/slices/appSlice.ts";
+import {toggleLoginStatus, getCurrentUser} from "../features/slices/appSlice.ts";
 
 function LoginPage() {
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    const {loginStatus, currentUser} = useSelector((state: RootState) => state.appState)
+    const {loginStatus} = useSelector((state: RootState) => state.appState)
     const [errorM, setErrorM] = useState<string>("")
 
     const dispatch = useDispatch()

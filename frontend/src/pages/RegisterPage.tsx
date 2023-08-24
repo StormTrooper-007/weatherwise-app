@@ -1,8 +1,7 @@
 import {Box, Button, Paper, TextField} from "@mui/material"
-import {Typography} from "@mui/material"
+import {Typography, Alert} from "@mui/material"
 import {FormEvent, useState} from "react"
 import {useRegisterMutation} from "../features/api/apiSlice.tsx"
-import {Alert} from "@mui/material";
 import {useNavigate} from "react-router-dom"
 
 function RegisterPage() {
@@ -42,7 +41,7 @@ function RegisterPage() {
             <Box sx={{mt: 10, ml: 24}}>
                 <Typography sx={{fontFamily: 'Rajdhani', fontSize: 20, fontWeight: 'bold'}}>Sign up</Typography>
             </Box>
-            <img src="*" alt="*" style={{ml: 20}}/>
+
             <Box
                 sx={{mt: 10}}
                 component="form"

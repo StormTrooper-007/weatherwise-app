@@ -58,9 +58,6 @@ function TodoCard({todo, setEditItem, setId, setEdit}: props) {
 
     }, [])
 
-    /*function handleSave() {
-
-    }*/
 
     useEffect(() => {
         const timer = setInterval(() => {
