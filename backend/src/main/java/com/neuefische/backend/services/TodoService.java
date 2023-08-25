@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RequiredArgsConstructor
@@ -21,8 +20,6 @@ public class TodoService {
     private final UuidService uuidService;
     private final DateFormaterService dateFormaterService;
     private final TodoUserService todoUserService;
-
-    Logger logger = Logger.getLogger(TodoService.class.getName());
 
 
     public String createNewTodo(TodoWithOutId todoWithOutId) throws UserNotFoundException, BadRequestException {
