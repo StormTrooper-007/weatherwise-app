@@ -1,35 +1,51 @@
-import {Box, Button} from "@mui/material";
+import {Box, Grid, Paper} from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import GradeIcon from '@mui/icons-material/Grade';
+import CreateIcon from '@mui/icons-material/Create';
 import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
-import SettingsIcon from '@mui/icons-material/Settings';
-import PersonIcon from '@mui/icons-material/Person';
-
+import {useNavigate} from "react-router-dom";
 
 function Footer() {
+
+    const navigate = useNavigate()
     return (
         <Box sx={{
-            display: "flex",
-            alignItems: "center",
             height: 81,
+            width: "100%",
             bottom: 1,
             position: "fixed",
-            m: 0.25
-
+            backgroundColor: "#35baf6"
         }}>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<HomeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<ListAltIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<GradeIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<AutoDeleteIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<SettingsIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
-            <Button variant="contained" sx={{pt: 2, pb: 2}}
-                    startIcon={<PersonIcon sx={{height: 30, width: 30, ml: 2}}/>}/>
+            <Grid sx={{flexGrow: 1}} container spacing={1}>
+                <Grid item xs={12}>
+                    <Grid container justifyContent="center" spacing={1}>
+                        <Grid item>
+                            <Paper onClick={() => navigate("/")}
+                                   sx={{p: 2, m: 1, borderRadius: 1}}>
+                                <HomeIcon sx={{color: "black"}}/>
+                            </Paper>
+                        </Grid>
+                        <Grid item>
+                            <Paper onClick={() => navigate("/todos")}
+                                   sx={{p: 2, m: 1, borderRadius: 1}}>
+                                <ListAltIcon sx={{color: "black"}}/>
+                            </Paper>
+                        </Grid>
+                        <Grid item>
+                            <Paper onClick={() => navigate("/todo")}
+                                   sx={{p: 2, m: 1, borderRadius: 1}}>
+                                <CreateIcon sx={{color: "black"}}/>
+                            </Paper>
+                        </Grid>
+                        <Grid item>
+                            <Paper onClick={() => navigate("/timedout")}
+                                   sx={{p: 2, m: 1, borderRadius: 1}}>
+                                <AutoDeleteIcon sx={{color: "black"}}/>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Box>
     );
 }

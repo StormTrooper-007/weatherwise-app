@@ -1,68 +1,62 @@
 import Clock from "../components/Clock.tsx";
 import {useGetUpcomingQuery} from "../features/api/apiSlice.tsx";
-import {Box, Grid, Typography} from "@mui/material";
+import {Box, Grid, Typography, Alert} from "@mui/material";
 import UpcomingTodoCard from "../components/UpcomingTodoCard.tsx";
 import {useCallback, useEffect, useState} from "react";
+import {calcCelsius} from "../functions.ts";
 import axios from "axios";
 import {WeatherInfo} from "../utils.tsx";
-import annyang from 'annyang';
+import {useSelector, useDispatch} from "react-redux";
+import {RootState} from "../store.tsx";
+import {
+    toggleLoginStatus,
+    getWeatherInfoMessage,
+    toggleWeatherInfoMessage
+} from "../features/slices/appSlice.ts";
+import {useNavigate} from "react-router-dom";
+
 
 function Home() {
     const {data, isLoading} = useGetUpcomingQuery()
-    const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>()
+    const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>({
+        coord: {
+            lat: 0,
+            long: 0,
+        },
+        main: {
+            temp: 0,
+            feels_like: 0,
+            temp_min: 0,
+            temp_max: 0,
+        },
+        weather: [],
+        clouds: {
+            all: 0
+        },
+        name: ""
+    })
+
+    const {
+        loginStatus,
+        currentUser,
+        weatherInfoMessage,
+        showWeatherInfoMessage
+    } = useSelector((state: RootState) => state.appState)
+    const dispatch = useDispatch()
+    const [errorM, setErrorM] = useState<string>("")
 
     const getCurrentWeatherInfo = useCallback(async () => {
         try {
             const res = await axios.get("/api/weather/48.1351/11.5820")
             await setWeatherInfo(res.data)
+            dispatch(getWeatherInfoMessage("success", ""))
+            dispatch(toggleWeatherInfoMessage())
         } catch (error) {
-            console.log(error)
+            setErrorM(error.message)
+            dispatch(getWeatherInfoMessage("", error.message))
         }
     }, [])
 
-    const speakText = (text: string) => {
-        const synth = window.speechSynthesis;
-        if (synth.speaking) {
-            console.error('SpeechSynthesisUtterance is already in progress.');
-            return;
-        }
-
-        const utterance = new SpeechSynthesisUtterance(text)
-        synth.speak(utterance)
-    };
-
-
-    console.log(weatherInfo)
-    const speakWeatherInfo = () => {
-        if (weatherInfo) {
-            const weather = weatherInfo?.weather.find((info: {
-                id: number,
-                main: string,
-                description: string
-            }) => info.main)
-            speakText(`Hello there! Hope you are having a wonderful day? Just a short summary of the weather today...We are having
-            ${weather?.description} today, the temperature today is
-            ${weatherInfo.main.temp} however it feels like
-            ${weatherInfo.main.feels_like}. Remember to plan your day accordingly. Have a wonderful day!`)
-        }
-    }
-
-    function handleStart() {
-        if (annyang) {
-            const commands = {
-                "weather today": () => speakWeatherInfo(),
-            }
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            annyang.addCommands(commands);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            annyang.start();
-        }
-    }
-
-    handleStart()
 
     useEffect(() => {
         const source = axios.CancelToken.source()
@@ -72,26 +66,55 @@ function Home() {
         }
     }, [getCurrentWeatherInfo])
 
-    if (isLoading) {
-        return (<img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
-    }
+    const navigate = useNavigate()
+
+    if (isLoading) return (
+        <img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return (
-        <Box sx={{flexGrow: 1, minHeight: 200}} onClick={speakWeatherInfo}>
+        <Box sx={{flexGrow: 1, minHeight: 200}}>
+            {!loginStatus && <Alert severity="success" onClick={() => dispatch(toggleLoginStatus())}>
+                logged in as {currentUser}
+            </Alert>}
+            {!showWeatherInfoMessage && <Alert severity="success" onClick={() => dispatch(toggleWeatherInfoMessage())}>
+                {weatherInfo !== null && weatherInfoMessage.success}
+            </Alert>}
+            {errorM !== "" && <Alert severity="error" onClick={() => {
+                setErrorM("")
+            }}>
+                {errorM}
+            </Alert>}
             <Grid container>
                 <Grid item xs={12}>
                     <Clock weatherInfo={weatherInfo}/>
                 </Grid>
-                <Grid item xs={12} sx={{backgroundColor: "#708090", minHeight: "100vh"}}>
-                    <Typography variant="h3">Upcoming</Typography>
+                <Grid item xs={12}
+                      sx={{
+                          background: 'url("/sunny.jpg")',
+                          backgroundSize: 'cover',
+                          height: "100vh",
+                          backgroundPosition: 'center',
+                      }}
+                >
+                    <Box sx={{backgroundColor: "rgba(255, 255, 255, 0.55)", m: 2, p: 1}}>
+                        <Typography variant="h5"
+                                    gutterBottom>Temperature:{calcCelsius(weatherInfo?.main.temp)} &#8451;</Typography>
+                        <Typography variant="h5" gutterBottom>Feels
+                            like:{calcCelsius(weatherInfo?.main.feels_like)} &#8451;</Typography>
+                        <Typography variant="h5" gutterBottom>
+                            Weather now: {weatherInfo?.weather[0]?.description}</Typography>
+                        <Typography variant="h5" gutterBottom>Upcoming plans</Typography>
+                    </Box>
+
                     {data?.map((upcoming) => (
                         <Box key={upcoming.id}
                              sx={{
                                  display: "flex",
                                  justifyContent: "space-between",
                              }}
+                             onClick={() => navigate("/todos")}
                         >
                             <UpcomingTodoCard upcoming={upcoming}/>
                         </Box>

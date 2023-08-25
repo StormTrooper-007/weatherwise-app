@@ -1,14 +1,17 @@
-import {Box} from "@mui/material";
-import {Outlet} from "react-router-dom";
-import Footer from "../components/Footer.tsx";
+import {Navigate, Outlet} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {RootState} from "../store.tsx";
+
 
 function Protected() {
+    const {currentUser} = useSelector((state: RootState) => state.appState)
     return (
-        <Box sx={{position: "relative"}}>
+        currentUser === "anonymousUser"
+            ?
+            <Navigate to="/login"/>
+            :
             <Outlet/>
-            <Footer/>
-        </Box>
-    );
+    )
 }
 
 export default Protected;

@@ -15,6 +15,8 @@ public class Todo {
     private String id;
     private String plan;
     private String startTime;
-    private String status;
     private String createdAt;
+    private String todoUserId;
 }
+
+
