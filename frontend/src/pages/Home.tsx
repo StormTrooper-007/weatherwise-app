@@ -51,7 +51,7 @@ function Home() {
             await setWeatherInfo(res.data)
             dispatch(getWeatherInfoMessage("success", ""))
             dispatch(toggleWeatherInfoMessage())
-        } catch (error) {
+        } catch (error: any) {
             setErrorM(error.message)
             dispatch(getWeatherInfoMessage("", error.message))
         }

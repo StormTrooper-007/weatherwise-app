@@ -8,7 +8,7 @@ function RegisterPage() {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [repeatPassword, setRepeatPassword] = useState<string>("")
-    const [register, {isError, isSuccess, data, error}] = useRegisterMutation()
+    const [register, {isError, isSuccess, data}] = useRegisterMutation()
     const [errorM, setErrorM] = useState<string>("")
     const [successMessage, setSuccessMessage] = useState<string>("")
 
@@ -18,7 +18,7 @@ function RegisterPage() {
     async function handleRegisterNewUser(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
         if (password === repeatPassword) await register({username, email, password})
-        if (isError) return setErrorM(error.data.error)
+        if (isError) return setErrorM("incorrect input")
         if (isSuccess && data != undefined) {
             setSuccessMessage(data)
             setTimeout(() => {

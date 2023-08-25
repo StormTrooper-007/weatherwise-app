@@ -27,7 +27,9 @@ function LoginPage() {
                     if (!loginStatus) navigate("/")
                 }
             })
-            .catch((error) => setErrorM("wrong credentials"))
+            .catch((error: any) => {
+                error && setErrorM("wrong credentials")
+            })
         setUsername("")
         setPassword("")
     }
