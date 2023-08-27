@@ -4,14 +4,14 @@ import com.neuefische.backend.TodoRepository;
 import com.neuefische.backend.exceptions.BadRequestException;
 import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.Todo;
-import com.neuefische.backend.models.TodoWithOutId;
+import com.neuefische.backend.models.TodoWithOutIdAndStartTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 @RequiredArgsConstructor
 @Service
@@ -25,7 +25,7 @@ public class TodoService {
     Logger logger = Logger.getLogger(TodoService.class.getName());
 
 
-    public String createNewTodo(TodoWithOutId todoWithOutId) throws UserNotFoundException, BadRequestException {
+    public String createNewTodo(TodoWithOutIdAndStartTime todoWithOutId) throws UserNotFoundException, BadRequestException {
         Todo newTodo = new Todo();
         newTodo.setId(uuidService.generateNewId());
         newTodo.setPlan(todoWithOutId.plan());
@@ -49,7 +49,7 @@ public class TodoService {
                 -> dateFormaterService.calcTimeDiffInDays(todo.getStartTime()) < 2).toList();
     }
 
-    public Todo editTodo(TodoWithOutId todoWithOutId, String id) {
+    public Todo editTodo(TodoWithOutIdAndStartTime todoWithOutId, String id) {
         Todo isEditTodo = todoRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Todo not found"));
         isEditTodo.setPlan(todoWithOutId.plan());
         isEditTodo.setStartTime(todoWithOutId.startTime());

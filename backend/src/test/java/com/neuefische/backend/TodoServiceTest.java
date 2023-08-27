@@ -5,12 +5,11 @@ import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.TimedOut;
 import com.neuefische.backend.models.TimedOutWithOutId;
 import com.neuefische.backend.models.Todo;
-import com.neuefische.backend.models.TodoWithOutId;
+import com.neuefische.backend.models.TodoWithOutIdAndStartTime;
 import com.neuefische.backend.security.TodoUser;
 import com.neuefische.backend.services.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.Timed;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +34,7 @@ class TodoServiceTest {
 
     @Test
     void testCreateNewTodo() throws UserNotFoundException, BadRequestException {
-        TodoWithOutId todoWithOutId = new TodoWithOutId(
+        TodoWithOutIdAndStartTime todoWithOutId = new TodoWithOutIdAndStartTime(
                 "my plan",
                 "start time"
         );
@@ -96,7 +95,7 @@ class TodoServiceTest {
     void testEditTodo() {
         String nowTime = "2023-07-27 12:34:56.123456";
         when(todoRepository.findById("1")).thenReturn(Optional.of(new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", nowTime, "1")));
-        TodoWithOutId todoWithOutId = new TodoWithOutId(
+        TodoWithOutIdAndStartTime todoWithOutId = new TodoWithOutIdAndStartTime(
                 "go out to see friends",
                 "2023-08-23T15:55:33.000+02:00"
         );

@@ -3,7 +3,7 @@ package com.neuefische.backend.controllers;
 import com.neuefische.backend.exceptions.BadRequestException;
 import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.Todo;
-import com.neuefische.backend.models.TodoWithOutId;
+import com.neuefische.backend.models.TodoWithOutIdAndStartTime;
 import com.neuefische.backend.services.TodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<String> createNewTodo(@Valid @RequestBody TodoWithOutId todoWithOutId) {
+    public ResponseEntity<String> createNewTodo(@Valid @RequestBody TodoWithOutIdAndStartTime todoWithOutId) {
         try {
             todoService.createNewTodo(todoWithOutId);
             return ResponseEntity.ok("new plan created successfully");
@@ -50,7 +50,7 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> editAnimal(@RequestBody TodoWithOutId todoWithOutId, @PathVariable String id) {
+    public ResponseEntity<Todo> editAnimal(@RequestBody TodoWithOutIdAndStartTime todoWithOutId, @PathVariable String id) {
         Todo newTodo = todoService.editTodo(todoWithOutId, id);
         return ResponseEntity.ok(newTodo);
     }

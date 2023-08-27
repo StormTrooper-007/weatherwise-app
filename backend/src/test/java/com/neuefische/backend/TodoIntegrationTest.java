@@ -5,7 +5,7 @@ import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.TimedOut;
 import com.neuefische.backend.models.TimedOutWithOutId;
 import com.neuefische.backend.models.Todo;
-import com.neuefische.backend.models.TodoWithOutId;
+import com.neuefische.backend.models.TodoWithOutIdAndStartTime;
 import com.neuefische.backend.security.LoginRequest;
 import com.neuefische.backend.security.RegisterRequest;
 import com.neuefische.backend.services.TodoService;
@@ -51,8 +51,8 @@ class TodoIntegrationTest {
     @WithMockUser
     void testCreateTodo() throws Exception {
         doThrow(new UserNotFoundException("Sorry could not find user"))
-                .when(todooService).createNewTodo(Mockito.any(TodoWithOutId.class));
-        TodoWithOutId todoWithOutId = new TodoWithOutId("play football", "2023-08-23T15:55:33.000+02:00");
+                .when(todooService).createNewTodo(Mockito.any(TodoWithOutIdAndStartTime.class));
+        TodoWithOutIdAndStartTime todoWithOutId = new TodoWithOutIdAndStartTime("play football", "2023-08-23T15:55:33.000+02:00");
         String requestBody = objectMapper.writeValueAsString(todoWithOutId);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/todos")
                         .with(csrf())
