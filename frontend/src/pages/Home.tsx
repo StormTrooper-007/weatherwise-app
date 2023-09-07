@@ -68,6 +68,7 @@ function Home() {
         axios.get("/api/users/logout")
             .then(response => {
                 setCurrentUser(response.data)
+                getUser()
             })
             .catch(error => {
                 setErrorM(error.response.data)
