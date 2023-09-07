@@ -69,18 +69,17 @@ function CreateTodo() {
             setEditMode(true)
         }
     }, [])
-    console.log(id)
-    console.log(editMode)
+
 
     return (
-        <Box>
+        <>
             {errorM !== "" && <Alert variant="filled" severity="error" sx={{mt: 4, mr: 1}}>{errorM}</Alert>}
             {successM !== "" && <Alert variant="filled" severity="success" sx={{mt: 4, mr: 1}}>{successM}</Alert>}
             <Box onSubmit={!editMode ? createNewTodo : updateTodo}
-                 sx={{mt: 30, ml: 3, p: 3, minHeight: 50, boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", width: 300}}
-                 component={"form"}>
+                 sx={{mt: 10, ml: 3, p: 3, minHeight: 50, boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", width: 300}}
+                 component="form">
 
-                <Typography>Create a new plan: </Typography>
+                <Typography sx={{mb: 2}}>Create a new plan: </Typography>
                 <TextField
                     sx={{width: 250}}
                     label="what's your plan"
@@ -90,14 +89,14 @@ function CreateTodo() {
                     onChange={(e) => setPlan(e.target.value)}
                 />
                 <Box sx={{mt: 5}}>
-                    Enter Start Date:
+                    <Typography sx={{mb: 2}}> Enter Start Date: </Typography>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <MobileDateTimePicker defaultValue={dayjs()} onChange={(newValue) => setStartTime(newValue)}/>
                     </LocalizationProvider>
                 </Box>
-                <Button variant="contained" type="submit" sx={{mt: 1}}>{!editMode ? "Create" : "Update"}</Button>
+                <Button variant="contained" type="submit" sx={{mt: 5}}>{!editMode ? "Create" : "Update"}</Button>
             </Box>
-        </Box>
+        </>
     );
 }
 

@@ -24,3 +24,6 @@ export type WeatherInfo = {
     },
     name: string
 }
+
+
+

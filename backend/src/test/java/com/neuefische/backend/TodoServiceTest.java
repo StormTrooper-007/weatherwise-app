@@ -5,6 +5,7 @@ import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.TimedOut;
 import com.neuefische.backend.models.TimedOutWithOutId;
 import com.neuefische.backend.models.Todo;
+import com.neuefische.backend.models.TodoWithOutId;
 import com.neuefische.backend.security.TodoUser;
 import com.neuefische.backend.services.*;
 import org.junit.jupiter.api.Assertions;
@@ -33,17 +34,17 @@ class TodoServiceTest {
 
     @Test
     void testCreateNewTodo() throws UserNotFoundException, BadRequestException {
-        TodoWithOutIdAndStartTime todoWithOutId = new TodoWithOutIdAndStartTime(
+        TodoWithOutId todoWithOutId = new TodoWithOutId(
                 "my plan",
                 "start time"
         );
         String nowTime = "2023-7-26T11:19:26.492745400";
 
-        String expected = "new plan created successfully";
+        Todo expected = new Todo("1", "my plan", "start time", nowTime, "1");
         when(uuidService.generateNewId()).thenReturn("1");
         when(dateFormaterService.getTimeStamp()).thenReturn(nowTime);
         when(todoUserService.getCurrentUserId()).thenReturn(new TodoUser("1", "username", "email", "password"));
-        String actual = todoService.createNewTodo(todoWithOutId);
+        Todo actual = todoService.createNewTodo(todoWithOutId);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -94,7 +95,7 @@ class TodoServiceTest {
     void testEditTodo() {
         String nowTime = "2023-07-27 12:34:56.123456";
         when(todoRepository.findById("1")).thenReturn(Optional.of(new Todo("1", "go bike riding", "2023-08-26T15:55:33.000+02:00", nowTime, "1")));
-        TodoWithOutIdAndStartTime todoWithOutId = new TodoWithOutIdAndStartTime(
+        TodoWithOutId todoWithOutId = new TodoWithOutId(
                 "go out to see friends",
                 "2023-08-23T15:55:33.000+02:00"
         );

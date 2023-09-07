@@ -119,3 +119,4 @@ function WeatherDisplay({currentUser, weatherInfo, logOut}: props) {
 }
 
 export default WeatherDisplay;
+

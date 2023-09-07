@@ -7,6 +7,7 @@ import CreateTodo from "./pages/CreateTodo.tsx";
 import Root from "./pages/Root.tsx";
 import Settings from "./pages/Settings.tsx";
 import Todos from "./pages/Todos.tsx";
+import TimedOuts from "./pages/TimedOuts.tsx";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                         <Route path="/todo" element={<CreateTodo/>}></Route>
                         <Route path="/settings" element={<Settings/>}></Route>
                         <Route path="/todos" element={<Todos/>}></Route>
+                        <Route path="/timedouts" element={<TimedOuts/>}></Route>
                     </Route>
 
                     <Route>

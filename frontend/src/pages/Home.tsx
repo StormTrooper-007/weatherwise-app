@@ -1,7 +1,7 @@
 import axios from "axios";
 import {FormEvent, useCallback, useEffect, useState} from "react";
 import {calcCelsius} from "../functions.ts";
-import {Box, Grid, Alert, Typography, Divider} from "@mui/material"
+import {Box, Grid, Alert, Typography, Divider, Paper} from "@mui/material"
 import WeatherDisplay from "../components/WeatherDisplay.tsx";
 import {WeatherInfo} from "../utils.tsx";
 import {Todo} from "../utils.tsx";
@@ -102,39 +102,42 @@ function Home() {
     return (
         <>
             <Box sx={{flexGrow: 1, minHeight: 200}}>
-                {loginSuccessM !== "" && currentUser !== "anonymousUser" && <Alert severity="success">
+                {loginSuccessM !== "" && currentUser !== "anonymousUser" && <Alert variant="filled" severity="success">
                     {loginSuccessM + " " + currentUser}
                 </Alert>}
-                {errorM !== "" && <Alert severity="error">{errorM}</Alert>}
+                {errorM !== "" && <Alert variant="filled" severity="error">{errorM}</Alert>}
                 <Grid container>
                     <Grid item xs={12}>
                         <WeatherDisplay currentUser={currentUser} weatherInfo={weatherInfo} logOut={logOut}/>
                     </Grid>
                     <Grid item xs={12}>
                         <Box sx={{m: 2, p: 1, display: "flex", flexDirection: "column"}}>
-                            <Box sx={{height: 80, width: "100%", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", p: 2}}>
-                                <Typography variant={"h6"}> Temperature </Typography>
+                            <Paper elevation={3} sx={{height: 80, width: "100%", p: 2}}>
+                                <Typography variant="h6"> Temperature </Typography>
                                 <Typography
                                     sx={{fontFamily: 'Stick No Bills'}}> {calcCelsius(weatherInfo?.main.temp)} &#8451; </Typography>
-                            </Box>
-                            <Box sx={{height: 80, width: "100%", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", p: 2}}>
-                                <Typography variant={"h6"}>Feels like</Typography>
+                            </Paper>
+                            <Paper elevation={3} sx={{height: 80, width: "100%", p: 2, mt: 2}}>
+                                <Typography variant="h6">Feels like</Typography>
                                 <Typography
                                     sx={{fontFamily: 'Stick No Bills'}}>{calcCelsius(weatherInfo?.main.feels_like)}
                                     &#8451;
                                 </Typography>
-                            </Box>
-                            <Box sx={{height: 80, width: "100%", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", p: 2}}>
-                                <Typography variant={"h6"}>Overview</Typography>
+                            </Paper>
+                            <Paper elevation={3} sx={{height: 80, width: "100%", p: 2, mt: 2}}>
+                                <Typography variant="h6">Overview</Typography>
                                 <Typography
                                     sx={{fontFamily: 'Stick No Bills'}}>{weatherInfo?.weather[0]?.description}</Typography>
-                            </Box>
+                            </Paper>
                         </Box>
                         <Box sx={{m: 2}}>
                             <Divider/>
                             <Box>
                                 <Typography variant={"h6"}>Upcoming Plans</Typography>
                                 <Divider/>
+                                {upcomingTodos.length === 0 ? <Alert sx={{mt: 2}} variant="filled" severity="warning">
+                                    you currently don't have any upcoming plans
+                                </Alert> : null}
                                 {upcomingTodos.map(todo => <UpcomingCard todo={todo} key={todo.id}/>)}
                             </Box>
                         </Box>
@@ -147,3 +150,5 @@ function Home() {
 }
 
 export default Home;
+
+

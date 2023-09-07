@@ -10,13 +10,14 @@ import {
     Menu,
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Todo} from "../utils.tsx"
 import {useTimer} from "react-timer-hook";
 import dayjs from "dayjs";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {getId, setEditTodo} from "../features/appSlice.ts";
+import axios from "axios";
 
 
 const StyledPaper = styled(Paper)(({theme}) => ({
@@ -30,9 +31,11 @@ const StyledPaper = styled(Paper)(({theme}) => ({
 type props = {
     todo: Todo
     deleteTodo: (id: string) => void
+    setErrorM: React.Dispatch<React.SetStateAction<string>>
+    setSuccessM: React.Dispatch<React.SetStateAction<string>>
 }
 
-function TodoCard({todo, deleteTodo}: props) {
+function TodoCard({todo, deleteTodo, setErrorM, setSuccessM}: props) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [unmute, setUnmute] = useState(false)
     const open = Boolean(anchorEl);
@@ -54,6 +57,44 @@ function TodoCard({todo, deleteTodo}: props) {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+
+    function handleSaveToTimedOut() {
+        const data = {
+            plan: todo.plan,
+            startTime: todo.startTime,
+            createdAt: todo.createdAt,
+            todoUserId: todo.todoUserId
+        }
+        axios.post("/api/timedout", data).then(() => {
+            setSuccessM("time up")
+            setTimeout(() => {
+                setSuccessM("")
+            })
+        })
+            .catch(() => {
+                setErrorM("an error occured")
+                setTimeout(() => {
+                    setErrorM("")
+                })
+            })
+    }
+
+    const handleSave = useCallback(() => {
+        handleSaveToTimedOut()
+        deleteTodo(todo.id)
+    }, [])
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (days + hours + minutes + seconds <= 0) {
+                handleSave()
+                clearInterval(timer)
+            }
+        }, 1000)
+        return () => clearInterval(timer)
+
+    }, [days, hours, minutes, seconds])
 
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -125,3 +166,5 @@ function TodoCard({todo, deleteTodo}: props) {
 }
 
 export default TodoCard;
+
+
