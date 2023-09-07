@@ -1,32 +1,54 @@
-import {Item, Todo} from "../utils.tsx";
-import {Box, Button, Typography} from "@mui/material";
+import {
+    Box,
+    Grid,
+    Paper,
+    styled,
+    Typography,
+    IconButton,
+    MenuItem,
+    Fade,
+    Menu,
+} from "@mui/material";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import React, {useCallback, useEffect, useState} from "react";
+import {Todo} from "../utils.tsx"
 import {useTimer} from "react-timer-hook";
-import dayjs, {Dayjs} from "dayjs";
-import {useDeleteTodoMutation} from "../features/api/apiSlice.tsx";
+import dayjs from "dayjs";
+import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {useCallback, useEffect} from "react";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import axios from "axios"
+import {getId, setEditTodo} from "../features/appSlice.ts";
+import axios from "axios";
 
+
+const StyledPaper = styled(Paper)(({theme}) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(2),
+    maxWidth: 400,
+    color: theme.palette.text.primary,
+}));
 
 type props = {
     todo: Todo
-    setEditItem: React.Dispatch<React.SetStateAction<{ plan: string, startTime: Dayjs }>>
-    setId: React.Dispatch<React.SetStateAction<string>>
-    setEdit: React.Dispatch<React.SetStateAction<boolean>>
-    data: Todo[]
+    deleteTodo: (id: string) => void
+    setErrorM: React.Dispatch<React.SetStateAction<string>>
+    setSuccessM: React.Dispatch<React.SetStateAction<string>>
 }
 
-function TodoCard({todo, setEditItem, setId, setEdit}: props) {
+function TodoCard({todo, deleteTodo, setErrorM, setSuccessM}: props) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [unmute, setUnmute] = useState(false)
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
-    const [deleteTodo] = useDeleteTodoMutation()
-
-    async function handleDelete(id: string) {
-        await deleteTodo(id)
+    function unMuteAlarm() {
+        setUnmute(true)
     }
-
 
     const {days, seconds, minutes, hours} = useTimer({
         expiryTimestamp: dayjs(todo.startTime) as never,
@@ -34,30 +56,34 @@ function TodoCard({todo, setEditItem, setId, setEdit}: props) {
     });
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-    function navigateToEditPage(id: string) {
-        setId(id)
-        setEdit(prev => !prev)
-        navigate("/edit")
-    }
 
-    async function handleTimeOutSave() {
+    function handleSaveToTimedOut() {
         const data = {
             plan: todo.plan,
             startTime: todo.startTime,
             createdAt: todo.createdAt,
-            toggleTimer: todo.toggleTimer,
             todoUserId: todo.todoUserId
         }
-        await axios.post("/api/timedout", data)
+        axios.post("/api/timedout", data).then(() => {
+            setSuccessM("time up")
+            setTimeout(() => {
+                setSuccessM("")
+            })
+        })
+            .catch(() => {
+                setErrorM("an error occured")
+                setTimeout(() => {
+                    setErrorM("")
+                })
+            })
     }
 
     const handleSave = useCallback(() => {
-        handleTimeOutSave()
+        handleSaveToTimedOut()
         deleteTodo(todo.id)
-
     }, [])
-
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -71,46 +97,74 @@ function TodoCard({todo, setEditItem, setId, setEdit}: props) {
     }, [days, hours, minutes, seconds])
 
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return (
-        <Box>
-            <Item sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-                backgroundColor: "rgba(255, 255, 255, 0.85)"
-            }}>
-                <Typography variant="h6" sx={{fontWeight: 900}}>
-                    {todo.plan.length > 25 ? (todo.plan.slice(0, 25) + "...") : (todo.plan)}
-                </Typography>
-                <Typography variant="h6" sx={{fontWeight: 900}}>
-                    {days < 10 ? `${0}${days}` : days} days, {" "}
-                    {hours < 10 ? `${0}${hours}` : hours}
-                    :
-                    {minutes < 10 ? `${0}${minutes}` : minutes}
-                    :
-                    {seconds < 10 ? `${0}${seconds}` : seconds}
-                    {days + hours + minutes + seconds === 0 ? " timeup" : " remaining"}
-                </Typography>
-                <Box>
-                    <Button
-                        startIcon={<VisibilityIcon/>}
-                        variant="outlined" sx={{m: 1}}
-                        onClick={() => navigate(`/plan/${todo.id}`)}/>
-                    <Button
-                        startIcon={<EditIcon/>}
-                        sx={{m: 1}}
-                        variant="outlined" onClick={() => {
-                        navigateToEditPage(todo.id)
-                        setEditItem({plan: todo.plan, startTime: dayjs()})
-                    }}/>
-                    <Button
-                        startIcon={<DeleteIcon/>}
-                        variant="outlined" sx={{m: 1}} onClick={() => handleDelete(todo.id)}/>
-                </Box>
-            </Item>
+        <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
+
+            <StyledPaper
+                sx={{
+                    my: 4,
+                    mx: 'auto',
+                    p: 6,
+                }}
+            >
+                <Paper sx={{mb: 4, p: 1}}>
+                    <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                        <Box>{days < 10 ? `${0}${days}` : days} days, {" "}</Box>
+                        <Box>{hours < 10 ? `${0}${hours}` : hours}</Box>
+                        :
+                        <Box> {minutes < 10 ? `${0}${minutes}` : minutes}</Box>
+                        :
+                        <Box sx={{color: "red"}}>{seconds < 10 ? `${0}${seconds}` : seconds}</Box>
+                    </Box>
+                </Paper>
+                <Grid container wrap="nowrap" spacing={2} sx={{pr: 5, display: "flex", alignItems: "center"}}>
+                    <Grid item xs sx={{mb: 2, ml: 2}}>
+                        <Typography noWrap>
+                            {todo.plan}
+                        </Typography>
+                    </Grid>
+                    <IconButton
+                        aria-controls={open ? 'fade-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}
+                    >
+                        <MoreVertIcon/>
+                    </IconButton>
+                    <Menu
+                        MenuListProps={{
+                            'aria-labelledby': 'fade-button',
+                        }}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        TransitionComponent={Fade}
+                    >
+                        <MenuItem onClick={() => {
+                            unMuteAlarm()
+                            handleClose()
+                        }}>{!unmute ? "Umute Alarm" : "Unmuted"}</MenuItem>
+                        <MenuItem onClick={handleClose}>view plan</MenuItem>
+                        <MenuItem onClick={() => {
+                            handleClose()
+                            dispatch(getId(todo.id))
+                            dispatch(setEditTodo(todo.plan, todo.startTime))
+                            navigate("/todo")
+                        }}>edit plan</MenuItem>
+                        <MenuItem onClick={() => {
+                            deleteTodo(todo.id)
+                            handleClose()
+                        }
+                        }>delete plan</MenuItem>
+                    </Menu>
+                </Grid>
+            </StyledPaper>
         </Box>
     );
 }
 
 export default TodoCard;
+
+

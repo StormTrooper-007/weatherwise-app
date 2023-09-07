@@ -1,43 +1,64 @@
 import {Box, Button, Paper, TextField, Typography, Alert} from "@mui/material"
 import {FormEvent, useState} from "react"
-import {useRegisterMutation} from "../features/api/apiSlice.tsx"
 import {useNavigate} from "react-router-dom"
+import axios from "axios";
 
 function RegisterPage() {
     const [username, setUsername] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [repeatPassword, setRepeatPassword] = useState<string>("")
-    const [register, {isError, isSuccess, data}] = useRegisterMutation()
     const [errorM, setErrorM] = useState<string>("")
     const [successMessage, setSuccessMessage] = useState<string>("")
+    const [errors, setErrors] = useState<any[]>([]);
 
 
     const navigate = useNavigate()
 
-    async function handleRegisterNewUser(event: FormEvent<HTMLFormElement>) {
+    function closeErrorMessage() {
+        setTimeout(() => {
+            setErrorM("")
+        }, 3000)
+    }
+
+    function closeSuccessMessage() {
+        setTimeout(() => {
+            setSuccessMessage("")
+        }, 3000)
+    }
+
+    function navigateToLogin() {
+        setTimeout(() => {
+            navigate("/login")
+        }, 3000)
+    }
+
+    function registerNewUser(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        if (password === repeatPassword) await register({username, email, password})
-        if (isError) return setErrorM("incorrect input")
-        if (isSuccess && data != undefined) {
-            setSuccessMessage(data)
-            setTimeout(() => {
-                navigate("/login")
-            }, 3000)
+        if (password === repeatPassword) {
+            axios.post("/api/users/register", {username, email, password})
+                .then(response => {
+                    setSuccessMessage(response.data)
+                    closeSuccessMessage()
+                    navigateToLogin()
+                })
+                .catch(error => {
+                    setErrorM(error.response.data.error)
+                    setErrors(error.response.data.errors)
+                    closeErrorMessage()
+                })
         }
         setUsername("")
         setEmail("")
         setPassword("")
         setRepeatPassword("")
-
     }
-
 
     return (
         <Box>
-            {errorM && <Alert severity="error" onClick={() => setErrorM("")}>{errorM}</Alert>}
-            {successMessage && <Alert severity="success" onClick={() => setSuccessMessage("")}>{successMessage}</Alert>}
-            <Box sx={{mt: 10, ml: 24}}>
+            {errorM !== "" && <Alert variant="filled" severity="error" sx={{mt: 2, mr: 2}}>{errorM}</Alert>}
+            {successMessage !== "" && <Alert variant="filled" severity="success">{successMessage}</Alert>}
+            <Box sx={{mt: 10, ml: 17}}>
                 <Typography sx={{fontFamily: 'Rajdhani', fontSize: 20, fontWeight: 'bold'}}>Sign up</Typography>
             </Box>
 
@@ -45,7 +66,7 @@ function RegisterPage() {
                 sx={{mt: 10}}
                 component="form"
                 autoComplete="off"
-                onSubmit={handleRegisterNewUser}
+                onSubmit={registerNewUser}
             >
                 <Paper sx={{
                     minHeight: 100,
@@ -62,9 +83,15 @@ function RegisterPage() {
                                type="password" variant="outlined"/>
                     <TextField onChange={(e) => setRepeatPassword(e.target.value)} sx={{mb: 2}} label="repeat password"
                                type="password" variant="outlined"/>
-                    <Button variant="contained" type="submit" sx={{width: 100, ml: 13}}>Send</Button>
+                    <Button variant="contained" type="submit" sx={{width: 100, ml: 12}}>Sign-up</Button>
                 </Paper>
             </Box>
+            <Paper elevation={1}>
+                {errors.map((error, index) => (
+                    <div key={index} style={{color: "red"}}>{error.defaultMessage}</div>
+                ))}
+            </Paper>
+
         </Box>
     );
 }

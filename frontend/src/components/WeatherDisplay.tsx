@@ -1,27 +1,23 @@
-import {Box, Typography, Paper, Button} from "@mui/material"
-import PersonIcon from '@mui/icons-material/Person';
-import {useEffect, useState} from "react"
+import {Box, Typography, Paper, Button, Grid} from "@mui/material"
+import {useState, useEffect, FormEvent} from "react";
+import PersonIcon from '@mui/icons-material/Person'
 import {useTime} from "react-timer-hook"
 import dayjs from "dayjs";
+import {determineMood, determineIcon, calcCelsius} from "../functions.ts";
 import {WeatherInfo} from "../utils.tsx";
-import {determineMood, calcCelsius, determineIcon} from "../functions.ts";
-import Grid from '@mui/material/Grid';
-import axios from "axios"
-import {useSelector, useDispatch} from "react-redux";
-import {removeCurrentUser, toggleLoginStatus} from "../features/slices/appSlice.ts";
-import {RootState} from "../store.tsx";
+import {useNavigate} from "react-router-dom";
 
 
 type props = {
+    currentUser: string
     weatherInfo: WeatherInfo
+    logOut: (e: FormEvent) => void
 }
 
-
-function Clock({weatherInfo}: props) {
+function WeatherDisplay({currentUser, weatherInfo, logOut}: props) {
     const [dayMood, setDayMood] = useState(false)
-    const {currentUser} = useSelector((state: RootState) => state.appState)
     const {hours} = useTime()
-    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     useEffect(() => {
         const updateBackgroundColor = () => {
@@ -41,14 +37,6 @@ function Clock({weatherInfo}: props) {
         return () => clearInterval(interval);
     }, [hours]);
 
-    function logout() {
-        location.reload()
-        dispatch(removeCurrentUser())
-        dispatch(toggleLoginStatus())
-        axios.get("/api/users/logout")
-            .then(response => console.log(response.data))
-            .catch(error => console.log("error occured: " + error))
-    }
 
     return (
         <Box sx={{
@@ -72,13 +60,28 @@ function Clock({weatherInfo}: props) {
                                         startIcon={<PersonIcon/>}>
                                     {currentUser}
                                 </Button>
-                                <form onSubmit={logout}>
-                                    <Button
-                                        type="submit"
-                                        color="primary"
-                                        variant="contained"
-                                        size="small" sx={{textTransform: "none", fontWeight: 900}}>logout</Button>
-                                </form>
+                                {
+                                    currentUser === "anonymousUser" ?
+                                        <Button
+                                            onClick={() => navigate("/login")}
+                                            color="primary"
+                                            variant="contained"
+                                            size="small"
+                                            sx={{textTransform: "none", fontWeight: 900, width: 50, ml: 10}}
+                                        >
+                                            login
+                                        </Button>
+                                        :
+                                        <form onSubmit={logOut}>
+                                            <Button
+                                                type="submit"
+                                                color="primary"
+                                                variant="contained"
+                                                size="small" sx={{textTransform: "none", fontWeight: 900}}>
+                                                logout
+                                            </Button>
+                                        </form>
+                                }
                             </Box>
                         </Box>
                     </Box>
@@ -100,10 +103,13 @@ function Clock({weatherInfo}: props) {
                                 backgroundColor: "rgba(255, 255, 255, 0.24)",
                                 p: 2,
                                 color: "white",
-                                width: 200,
-                                m: 1
+                                minWidth: 200,
+                                m: 1,
                             }}>
-                            <Typography variant="h6">{dayjs().format('dddd, MMMM D, YYYY h:mm A')}</Typography>
+                            <Typography variant="h6" sx={{
+                                fontFamily: "Stick No Bills",
+                                fontWeight: 900
+                            }}>{dayjs().format('dddd, MMMM D, YYYY h:mm A')}</Typography>
                         </Paper>
                     </Box>
                 </Grid>
@@ -112,4 +118,5 @@ function Clock({weatherInfo}: props) {
     );
 }
 
-export default Clock;
+export default WeatherDisplay;
+

@@ -10,7 +10,6 @@ import com.neuefische.backend.security.TodoUser;
 import com.neuefische.backend.services.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.Timed;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,11 +40,11 @@ class TodoServiceTest {
         );
         String nowTime = "2023-7-26T11:19:26.492745400";
 
-        String expected = "new plan created successfully";
+        Todo expected = new Todo("1", "my plan", "start time", nowTime, "1");
         when(uuidService.generateNewId()).thenReturn("1");
         when(dateFormaterService.getTimeStamp()).thenReturn(nowTime);
         when(todoUserService.getCurrentUserId()).thenReturn(new TodoUser("1", "username", "email", "password"));
-        String actual = todoService.createNewTodo(todoWithOutId);
+        Todo actual = todoService.createNewTodo(todoWithOutId);
         Assertions.assertEquals(expected, actual);
     }
 

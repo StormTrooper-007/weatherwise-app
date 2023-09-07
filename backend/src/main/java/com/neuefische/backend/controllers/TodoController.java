@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @RestController
@@ -25,11 +26,21 @@ public class TodoController {
     public ResponseEntity<String> createNewTodo(@Valid @RequestBody TodoWithOutId todoWithOutId) {
         try {
             todoService.createNewTodo(todoWithOutId);
-            return ResponseEntity.ok("new plan created successfully");
+            return ResponseEntity.ok("New plan created successfully");
         } catch (BadRequestException ex) {
-            return handleInvalidRequest("invalid credentials entered");
+            return handleInvalidRequest("Invalid credentials entered");
         } catch (UserNotFoundException ex) {
             return handleUserNotFoundException("Sorry could not find user");
+        }
+    }
+
+    @PatchMapping("/set/{id}")
+    public ResponseEntity<String> setTime(@Valid @RequestBody TodoWithOutId todoWithOutId, @PathVariable String id) {
+        try {
+            todoService.setTime(id, todoWithOutId);
+            return ResponseEntity.ok("start time set successfully");
+        } catch (NoSuchElementException ex) {
+            return SetTimeException("Plan could not be found");
         }
     }
 
@@ -62,6 +73,11 @@ public class TodoController {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(String message) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> SetTimeException(String message) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
 

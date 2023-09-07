@@ -1,35 +1,56 @@
-import {Box, List, Typography} from "@mui/material";
-import {useGetTodosQuery} from "../features/api/apiSlice.tsx";
+import {Alert, Box} from "@mui/material";
 import TodoCard from "../components/TodoCard.tsx";
-import {blueGrey} from "@mui/material/colors";
-import {Dayjs} from "dayjs";
+import axios from "axios";
+import {useEffect, useState} from "react";
+import {Todo} from "../utils.tsx"
 
-type props = {
-    setEditItem: React.Dispatch<React.SetStateAction<{ plan: string, startTime: Dayjs }>>
-    setId: React.Dispatch<React.SetStateAction<string>>
-    setEdit: React.Dispatch<React.SetStateAction<boolean>>
-}
+function Todos() {
+    const [todos, setTodos] = useState<Todo[]>([])
+    const [successM, setSuccessM] = useState<string>("")
+    const [errorM, setErrorM] = useState<string>("")
 
-function Todos({setEditItem, setId, setEdit}: props) {
-    const {data, isLoading} = useGetTodosQuery();
-    if (isLoading) return (
-        <img src="/icons8-dots-loading.gif" alt={"*"} style={{marginTop: 300, marginLeft: 150}}></img>)
+
+    function fetchTodos() {
+        axios.get("/api/todos")
+            .then(response => {
+                setTodos(response.data)
+                console.log(response.data)
+            })
+            .catch(error => console.log(error.response))
+    }
+
+    function deleteTodo(id: string) {
+        axios.delete(`/api/todos/${id}`)
+            .then((response) => {
+                console.log(response.data)
+                fetchTodos()
+            })
+            .catch((error) => error.response)
+    }
+
+    useEffect(() => {
+        fetchTodos()
+    }, [])
+
     return (
-        <Box>
-            <Typography variant="h3" sx={{p: 2, pl: 18, color: "white", backgroundColor: blueGrey[500]}}>
-                Plans
-            </Typography>
-            <Box sx={{backgroundImage: 'url("/rainy.jpg")', minHeight: "100vh", p: 1}}>
-                <List sx={{display: "flex", flexDirection: "column", m: 2}}>
-                    {
-                        data?.map((todo) => (
-                            <TodoCard key={todo.id} data={data} todo={todo} setEditItem={setEditItem} setEdit={setEdit}
-                                      setId={setId}/>
-                        ))
-                    }
-                </List>
+        <>
+            <Box sx={{display: "flex", flexDirection: "column", p: 2}}>
+                {todos.length === 0 ? <Alert variant="filled" severity="warning">
+                    You do not have any pending plans at the moment, check your timed out to see if you missed a plan
+                </Alert> : null}
+                {errorM !== "" && <Alert variant="filled" severity="error" sx={{mt: 4, mr: 1}}>{errorM}</Alert>}
+                {successM !== "" && <Alert variant="filled" severity="success" sx={{mt: 4, mr: 1}}>{successM}</Alert>}
+                {todos.map((todo) => (
+                    <TodoCard
+                        key={todo.id}
+                        todo={todo}
+                        deleteTodo={deleteTodo}
+                        setErrorM={setErrorM}
+                        setSuccessM={setSuccessM}
+                    />
+                ))}
             </Box>
-        </Box>
+        </>
     );
 }
 

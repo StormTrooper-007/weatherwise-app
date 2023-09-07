@@ -3,12 +3,9 @@ package com.neuefische.backend.models;
 import jakarta.validation.constraints.NotBlank;
 
 public record TodoWithOutId(
-        @NotBlank(message = "enter your plan for the date")
+        @NotBlank(message = "enter your plan")
         String plan,
-        @NotBlank(message = "enter your start time")
+        @NotBlank(message = "set start time")
         String startTime
-
 ) {
 }
-
-

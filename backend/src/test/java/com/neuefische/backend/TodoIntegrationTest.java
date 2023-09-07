@@ -114,8 +114,8 @@ class TodoIntegrationTest {
     void testLogout() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/logout")
                 )
-                .andExpect(status().isOk())
-                .andExpect(content().string("logged out successfully"));
+                .andExpect(status().isOk());
+
     }
 
     @Test

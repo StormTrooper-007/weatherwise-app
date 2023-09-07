@@ -1,6 +1,5 @@
 import {configureStore} from "@reduxjs/toolkit";
-import {apiSlice} from "./features/api/apiSlice.tsx";
-import appReducer from "./features/slices/appSlice.ts"
+import appReducer from "./features/appSlice.ts"
 
 const reHydrateStore = () => {
     if (localStorage.getItem('applicationState') !== null) {
@@ -21,12 +20,11 @@ const localStorageMiddleware = ({getState}: any) => {
 };
 export const store = configureStore({
     reducer: {
-        [apiSlice.reducerPath]: apiSlice.reducer,
         appState: appReducer
     },
     preloadedState: reHydrateStore(),
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(apiSlice.middleware, localStorageMiddleware)
+        getDefaultMiddleware().concat(localStorageMiddleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>;

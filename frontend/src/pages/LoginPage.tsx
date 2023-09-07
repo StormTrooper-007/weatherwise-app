@@ -1,88 +1,122 @@
-import {Button, Paper, TextField, Typography, Box, Alert} from "@mui/material";
-import {FormEvent, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../store.tsx";
-import {toggleLoginStatus, getCurrentUser} from "../features/slices/appSlice.ts";
+import {Box, Typography, Alert, Button, TextField} from "@mui/material";
+import {useForm, Controller} from "react-hook-form"
+
 
 function LoginPage() {
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    const {loginStatus} = useSelector((state: RootState) => state.appState)
     const [errorM, setErrorM] = useState<string>("")
 
-    const dispatch = useDispatch()
+
     const navigate = useNavigate()
 
 
-    function handleLogin(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault()
+    type LoginInput = {
+        username: string,
+        password: string
+    }
+
+
+    const {
+        control,
+        handleSubmit,
+        formState: {errors},
+    } = useForm<LoginInput>({
+        defaultValues: {
+            username: "",
+            password: "",
+        },
+    });
+
+    function handleLogin(data: LoginInput) {
         axios.post("/api/users/login", {username, password},
-            {auth: {username, password}, headers: {'Content-Type': 'application/json'}})
+            {auth: {username: data.username, password: data.password}, headers: {'Content-Type': 'application/json'}})
             .then((response) => {
-                if (response.data !== null) {
-                    dispatch(toggleLoginStatus())
-                    dispatch(getCurrentUser(response.data))
-                    if (!loginStatus) navigate("/")
+                if (response.data !== "anonymousUser") {
+                    navigate("/")
                 }
             })
-            .catch((error: any) => {
-                error && setErrorM("wrong credentials")
+            .catch((error) => {
+                if (error.response && error.response.status === 401) {
+                    setErrorM("invalid credentials")
+                    handleClose()
+                }
             })
         setUsername("")
         setPassword("")
     }
 
+    function handleClose() {
+        setTimeout(() => {
+            setErrorM("");
+        }, 5000)
+    }
+
+    function onSubmit(data: LoginInput) {
+        handleLogin(data)
+    }
 
     return (
         <Box>
-            {errorM !== "" && <Alert severity="error">{errorM}</Alert>}
-            <Box sx={{display: "flex", justifyContent: "space-between"}}>
-                <Box sx={{mt: 10, ml: 2}}>
-                    <img src="/icons8-partly-cloudy-day.gif" alt="*" style={{marginLeft: 150}}/>
-                    <Typography variant="h4" sx={{fontFamily: 'Rajdhani', fontSize: 18, fontWeight: 'bold'}}>
-                        plan your day better with weatherwise
-                    </Typography>
-                </Box>
-                <Box sx={{height: 30, p: 1, pb: 5}}>
-                    <Typography onClick={() => navigate("/register")}
-                                sx={{fontFamily: 'Rajdhani', fontWeight: 'bold', fontSize: 20}}
-                    >sign-up</Typography>
-                </Box>
-            </Box>
-            <Box sx={{mt: 10, ml: 25}}>
-                <Typography sx={{fontFamily: 'Rajdhani', fontWeight: 'bold', fontSize: 20}}>Login</Typography>
-            </Box>
+            <Box sx={{m: 2}}>sign-up</Box>
+            {errorM !== "" ? <Alert variant="filled" severity="error" sx={{mr: 1}}>{errorM}</Alert> : null}
 
-
-            <form
-                onSubmit={handleLogin}
-            >
-                <Paper sx={{
-                    minHeight: 100,
-                    display: "flex",
-                    flexDirection: "column",
-                    m: 2,
-                    p: 3
+            <Box
+                component="form"
+                onSubmit={handleSubmit(onSubmit)}
+                sx={{
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                    minHeight: 400, display: "flex",
+                    flexDirection: "column", p: 5, m: 2,
+                    mt: 20,
                 }}>
-                    <TextField sx={{mb: 2}}
-                               onChange={(e) => setUsername(e.target.value)}
-                               label="username"
-                               variant="outlined"
-                               value={username}
-                    />
-                    <TextField sx={{mb: 2}}
-                               onChange={(e) => setPassword(e.target.value)}
-                               label="password"
-                               type="password"
-                               value={password}
-                               variant="outlined"/>
-                    <Button variant="contained" type="submit" sx={{width: 100, ml: 13}}>Login</Button>
-                </Paper>
-            </form>
+
+                <Typography variant="h5" sx={{ml: 12, mb: 10, fontWeight: 900}}> Login </Typography>
+
+                {errors.username &&
+                    <Alert variant="filled" severity="error" sx={{mr: 1, mt: 1}}>username is required</Alert>}
+                Username:
+                <Controller
+                    name="username"
+                    control={control}
+                    rules={{
+                        required: "username name is required",
+                    }}
+                    render={({field}) => (
+                        <TextField
+                            label="username"
+                            type="text"
+                            variant="outlined"
+                            {...field}
+                        />
+                    )}
+                />
+                {errors.password &&
+                    <Alert variant="filled" severity="error" sx={{mr: 1, mt: 1}}>password is required</Alert>}
+                Password:
+                <Controller
+                    name="password"
+                    control={control}
+                    rules={{
+                        required: "password is required",
+                    }}
+                    render={({field}) => (
+                        <TextField
+                            label="Password"
+                            type="password"
+                            variant="outlined"
+                            {...field}
+                        />
+                    )}
+                />
+                <Button variant="contained" type="submit" sx={{mt: 1, width: 100, ml: 7}}>login</Button>
+            </Box>
         </Box>
     );
 }
 
 export default LoginPage;
+

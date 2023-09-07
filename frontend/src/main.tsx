@@ -2,44 +2,31 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import {Provider} from "react-redux"
-import {store} from "./store.tsx";
-import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
-import {blue, red} from "@mui/material/colors";
+import {Provider} from "react-redux";
+import {store} from "./store.ts";
+import {createTheme, CssBaseline} from "@mui/material";
 
-const theme = createTheme({
+const lightTheme = createTheme({
     palette: {
-        primary: {
-            main: blue[800],
-        },
-        secondary: {
-            main: red[500],
-        },
+        mode: 'light',
     },
-
-    components: {
-        MuiButton: {
-            variants: [
-                {
-                    props: {variant: 'outlined'},
-                    style: {
-                        textTransform: "none",
-                        padding: 2
-                    }
-                }
-            ]
-        },
-    },
-
 });
+
+// Dark theme
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
+
+export {lightTheme, darkTheme};
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <CssBaseline/>
         <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <App/>
-            </ThemeProvider>
+            <CssBaseline/>
+            <App/>
         </Provider>
 
     </React.StrictMode>,

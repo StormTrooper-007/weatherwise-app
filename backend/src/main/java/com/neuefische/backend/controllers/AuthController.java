@@ -5,11 +5,9 @@ import com.neuefische.backend.security.RegisterRequest;
 import com.neuefische.backend.services.TodoUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,8 +22,13 @@ public class AuthController {
             todoUserService.registerNewUser(registerRequest.username(), registerRequest.email(), registerRequest.password());
             return ResponseEntity.ok("New user " + "   " + registerRequest.username() + "  " + " created successfully");
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getLocalizedMessage());
+            return handleRegistrationException("Could no register new user");
         }
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleRegistrationException(String message) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 }
 
