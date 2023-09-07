@@ -4,13 +4,13 @@ import com.neuefische.backend.TodoRepository;
 import com.neuefische.backend.exceptions.BadRequestException;
 import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.Todo;
-import com.neuefische.backend.models.TodoWithOutIdAndStartTime;
+import com.neuefische.backend.models.TodoWithOutId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
+
 
 
 @RequiredArgsConstructor
@@ -22,10 +22,7 @@ public class TodoService {
     private final DateFormaterService dateFormaterService;
     private final TodoUserService todoUserService;
 
-    Logger logger = Logger.getLogger(TodoService.class.getName());
-
-
-    public String createNewTodo(TodoWithOutIdAndStartTime todoWithOutId) throws UserNotFoundException, BadRequestException {
+    public Todo createNewTodo(TodoWithOutId todoWithOutId) throws UserNotFoundException, BadRequestException {
         Todo newTodo = new Todo();
         newTodo.setId(uuidService.generateNewId());
         newTodo.setPlan(todoWithOutId.plan());
@@ -34,10 +31,17 @@ public class TodoService {
         try {
             newTodo.setTodoUserId(todoUserService.getCurrentUserId().getId());
         } catch (UserNotFoundException ex) {
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("User not logged in");
         }
         todoRepository.save(newTodo);
-        return "new plan created successfully";
+        return newTodo;
+    }
+
+    public Todo setTime(String id, TodoWithOutId todoWithOutId) {
+        Todo updateTodo = todoRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        updateTodo.setStartTime(todoWithOutId.startTime());
+        todoRepository.save(updateTodo);
+        return updateTodo;
     }
 
     public List<Todo> getAllTodos() {
@@ -49,7 +53,7 @@ public class TodoService {
                 -> dateFormaterService.calcTimeDiffInDays(todo.getStartTime()) < 2).toList();
     }
 
-    public Todo editTodo(TodoWithOutIdAndStartTime todoWithOutId, String id) {
+    public Todo editTodo(TodoWithOutId todoWithOutId, String id) {
         Todo isEditTodo = todoRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Todo not found"));
         isEditTodo.setPlan(todoWithOutId.plan());
         isEditTodo.setStartTime(todoWithOutId.startTime());

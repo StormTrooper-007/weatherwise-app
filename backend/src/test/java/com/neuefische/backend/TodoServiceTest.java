@@ -5,7 +5,6 @@ import com.neuefische.backend.exceptions.UserNotFoundException;
 import com.neuefische.backend.models.TimedOut;
 import com.neuefische.backend.models.TimedOutWithOutId;
 import com.neuefische.backend.models.Todo;
-import com.neuefische.backend.models.TodoWithOutIdAndStartTime;
 import com.neuefische.backend.security.TodoUser;
 import com.neuefische.backend.services.*;
 import org.junit.jupiter.api.Assertions;
