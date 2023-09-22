@@ -20,7 +20,7 @@ public class WeatherApiService {
                     .bodyToMono(APIResponse.class);
         } catch (WebClientResponseException ex) {
             throw new WebClientResponseException(
-                    ex.getRawStatusCode(),
+                    401,
                     "Failed to fetch data from the remote server",
                     ex.getHeaders(),
                     ex.getResponseBodyAsByteArray(),

@@ -186,7 +186,6 @@ class TodoIntegrationTest {
     @DirtiesContext
     @WithMockUser
     void testDeleteTimedOut() throws Exception {
-        String id = "1";
         TimedOut newTimedOut = new TimedOut();
         timedOutRepository.save(newTimedOut);
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/timedout/1").with(csrf()))
